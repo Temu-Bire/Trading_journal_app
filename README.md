@@ -1,0 +1,1 @@
+# Trading_journal_app
