@@ -28,3 +28,16 @@ export const createUser = async (data: CreateUserInput) => {
   // 5. Return safe user
   return safeUser;
 };
+export const getCurrentUser = async (userId: string) => {
+  const user = await User.findById(userId).select("-password");
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+  };
+};

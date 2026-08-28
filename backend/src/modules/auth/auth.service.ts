@@ -29,6 +29,7 @@ export const loginUser = async (data: LoginInput) => {
   // 5. Create JWT
   const accessToken = generateAccessToken({
     userId: user._id.toString(),
+    email: user.email,
   });
 
   // 6. Return authentication result
