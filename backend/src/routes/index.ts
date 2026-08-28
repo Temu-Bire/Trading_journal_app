@@ -1,5 +1,7 @@
 import { Router } from "express";
 
+import v1Routes from "./v1/index.js";
+
 const router = Router();
 
 router.get("/health", (_req, res) => {
@@ -9,5 +11,7 @@ router.get("/health", (_req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+router.use("/v1", v1Routes);
 
 export default router;

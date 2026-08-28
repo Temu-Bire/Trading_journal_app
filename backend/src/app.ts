@@ -4,7 +4,6 @@ import { corsMiddleware } from "./config/cors.js";
 import apiRoutes from "./routes/index.js"
 import { notFoundMiddleware } from "./middleware/notFound.middleware.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
-import e from "express";
 const app = express();
 
 app.use(helmet());
