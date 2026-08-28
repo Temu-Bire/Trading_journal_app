@@ -1,6 +1,7 @@
 import { User } from "../users/user.model.js";
 import type { LoginInput } from "./auth.types.js";
-import { verifyPassword, createAccessToken } from "../../utils/auth.js";
+import { verifyPassword } from "../../utils/password.js";
+import { generateAccessToken } from "../../utils/jwt.js";
 import { ApiError } from "../../utils/apiError.js";
 
 export const loginUser = async (data: LoginInput) => {
@@ -22,11 +23,11 @@ export const loginUser = async (data: LoginInput) => {
 
   // 4. Password is incorrect
   if (!passwordMatches) {
-    throw new ApiError(401, "Invalid email or password");
+    throw new ApiError(401, "Invalid credentials");
   }
 
   // 5. Create JWT
-  const accessToken = createAccessToken({
+  const accessToken = generateAccessToken({
     userId: user._id.toString(),
   });
 
