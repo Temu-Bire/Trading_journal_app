@@ -1,13 +1,13 @@
 import type { Request, Response, NextFunction } from "express";
-import { ApiError } from "../utils/apiError.js";
 import { ZodError } from "zod";
-import jwt from "jsonwebtoken";
+import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
+import { ApiError } from "../utils/apiError.js";
 
 export const errorMiddleware = (
   error: unknown,
   _req: Request,
   res: Response,
-  _next: NextFunction,
+  _next: NextFunction
 ): void => {
   console.error(error);
 
@@ -31,7 +31,7 @@ export const errorMiddleware = (
     return;
   }
 
-  if (error instanceof jwt.TokenExpiredError) {
+  if (error instanceof TokenExpiredError) {
     res.status(401).json({
       success: false,
       message: "Access token expired",
@@ -39,7 +39,7 @@ export const errorMiddleware = (
     return;
   }
 
-  if (error instanceof jwt.JsonWebTokenError) {
+  if (error instanceof JsonWebTokenError) {
     res.status(401).json({
       success: false,
       message: "Invalid access token",
