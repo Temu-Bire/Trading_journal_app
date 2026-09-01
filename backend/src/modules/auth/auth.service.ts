@@ -1,5 +1,5 @@
-import { userRepository } from "../users/user.repository.js"; // Repositoryው ገብቷል
-import type { LoginInput } from "./auth.types.js";
+import { userRepository } from "../users/user.repository.js";
+import type { LoginInput } from "../users/user.types.js";
 import { verifyPassword } from "../../utils/password.js";
 import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
 import { ApiError } from "../../utils/apiError.js";
@@ -13,29 +13,28 @@ export const loginUser = async (data: LoginInput) => {
     throw new ApiError(401, "Invalid credentials");
   }
 
-  // 3. Compare password
   const passwordMatches = await verifyPassword(data.password, user.password);
 
   if (!passwordMatches) {
     throw new ApiError(401, "Invalid credentials");
   }
 
-  // 4. Create Access and Refresh Tokens
+  const userId = String(user._id);
+
   const accessToken = generateAccessToken({
-    userId: user._id.toString(),
+    userId,
     email: user.email,
   });
 
   const refreshToken = generateRefreshToken({
-    userId: user._id.toString(),
+    userId,
   });
 
-  // 5. Return authentication result
   return {
     accessToken,
     refreshToken,
     user: {
-      id: user._id,
+      id: userId,
       name: user.name,
       email: user.email,
     },
