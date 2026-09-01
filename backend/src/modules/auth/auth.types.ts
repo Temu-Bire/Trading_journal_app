@@ -6,6 +6,7 @@ export interface LoginInput {
 export interface AccessTokenPayload {
   userId: string;
   email: string;
+  
 }
 
 export interface RefreshTokenPayload {

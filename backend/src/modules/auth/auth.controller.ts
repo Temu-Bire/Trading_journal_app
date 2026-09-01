@@ -3,6 +3,25 @@ import { loginUser, registerUser, refreshAccessToken, getCurrentUser } from "./a
 import { env } from "../../config/env.js";
 import { ApiError } from "../../utils/apiError.js";
 
+const isProduction = env.nodeEnv === "production";
+
+// የ Cookie አማራጮች (Cookie Options)
+const refreshTokenCookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? ("strict" as const) : ("lax" as const),
+  path: "/api/v1/auth/refresh", // Refresh Token የሚላከው ለዚህ route ብቻ ነው
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+};
+
+const accessTokenCookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? ("strict" as const) : ("lax" as const),
+  path: "/",
+  maxAge: 15 * 60 * 1000, // 15 minutes
+};
+
 export const registerController = async (
   req: Request,
   res: Response,
@@ -11,24 +30,13 @@ export const registerController = async (
   try {
     const { accessToken, refreshToken, user } = await registerUser(req.body);
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: env.nodeEnv === "production",
-      sameSite: env.nodeEnv === "production" ? "strict" : "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: env.nodeEnv === "production",
-      sameSite: env.nodeEnv === "production" ? "strict" : "lax",
-      maxAge: 15 * 60 * 1000,
-    });
+    res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
+    res.cookie("accessToken", accessToken, accessTokenCookieOptions);
 
     res.status(201).json({
       success: true,
       message: "User registered successfully",
-      data: { user, accessToken },
+      data: { user },
     });
   } catch (error) {
     next(error);
@@ -43,24 +51,13 @@ export const loginController = async (
   try {
     const { accessToken, refreshToken, user } = await loginUser(req.body);
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: env.nodeEnv === "production",
-      sameSite: env.nodeEnv === "production" ? "strict" : "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: env.nodeEnv === "production",
-      sameSite: env.nodeEnv === "production" ? "strict" : "lax",
-      maxAge: 15 * 60 * 1000,
-    });
+    res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
+    res.cookie("accessToken", accessToken, accessTokenCookieOptions);
 
     res.status(200).json({
       success: true,
       message: "Login successful",
-      data: { user, accessToken },
+      data: { user },
     });
   } catch (error) {
     next(error);
@@ -80,17 +77,11 @@ export const refreshController = async (
 
     const { accessToken } = await refreshAccessToken(refreshToken);
 
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: env.nodeEnv === "production",
-      sameSite: env.nodeEnv === "production" ? "strict" : "lax",
-      maxAge: 15 * 60 * 1000,
-    });
+    res.cookie("accessToken", accessToken, accessTokenCookieOptions);
 
     res.status(200).json({
       success: true,
       message: "Access token refreshed",
-      data: { accessToken },
     });
   } catch (error) {
     next(error);
@@ -102,8 +93,8 @@ export const logoutController = async (
   res: Response,
   _next: NextFunction
 ) => {
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
+  res.clearCookie("accessToken", { path: "/" });
+  res.clearCookie("refreshToken", { path: "/api/v1/auth/refresh" });
 
   res.status(200).json({
     success: true,

@@ -30,6 +30,7 @@ export const registerUser = async (data: CreateUserInput) => {
       id: userId,
       name: newUser.name,
       email: newUser.email,
+      role: newUser.role,
     },
   };
 };
@@ -42,14 +43,35 @@ export const loginUser = async (data: LoginInput) => {
     throw new ApiError(401, "Invalid credentials");
   }
 
+  if (!user.isActive) {
+    throw new ApiError(403, "Account is disabled. Contact support.");
+  }
+
+  if (user.isLocked) {
+    const remainingMinutes = Math.ceil(
+      (user.lockUntil!.getTime() - Date.now()) / (1000 * 60)
+    );
+    throw new ApiError(
+      423,
+      `Account is temporarily locked. Try again in ${remainingMinutes} minute(s)`
+    );
+  }
+
   const passwordMatches = await verifyPassword(data.password, user.password);
+
   if (!passwordMatches) {
+    // የተሳሳተ ሙከራን በ Repository በኩል መዝግቦ መጨመር
+    await userRepository.incrementLoginAttempts(user);
     throw new ApiError(401, "Invalid credentials");
+  }
+
+  if (user.loginAttempts > 0 || user.lockUntil) {
+    await userRepository.resetLoginAttempts(user);
   }
 
   const userId = String(user._id);
 
-  const accessToken = generateAccessToken({ userId, email: user.email });
+  const accessToken = generateAccessToken({ userId, email: user.email});
   const refreshToken = generateRefreshToken({ userId });
 
   return {
@@ -59,6 +81,7 @@ export const loginUser = async (data: LoginInput) => {
       id: userId,
       name: user.name,
       email: user.email,
+      role: user.role,
     },
   };
 };
