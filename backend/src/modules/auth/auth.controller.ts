@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { loginUser, registerUser, refreshAccessToken, getCurrentUser } from "./auth.service.js";
+import { forgotPasswordService, resetPasswordService } from "./auth.service.js";
 import { env } from "../../config/env.js";
 import { ApiError } from "../../utils/apiError.js";
 
@@ -117,6 +118,40 @@ export const getMeController = async (
     res.status(200).json({
       success: true,
       data: { user },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const forgotPasswordController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await forgotPasswordService(req.body);
+
+    res.status(200).json({
+      success: true,
+      message: "If an account with that email exists, a reset link has been sent.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPasswordController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await resetPasswordService(req.body);
+
+    res.status(200).json({
+      success: true,
+      message: "Password has been reset successfully. You can now log in.",
     });
   } catch (error) {
     next(error);

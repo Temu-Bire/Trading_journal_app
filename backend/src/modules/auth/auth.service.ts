@@ -3,6 +3,7 @@ import type { CreateUserInput, LoginInput } from "../users/user.types.js";
 import { verifyPassword } from "../../utils/password.js";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../../utils/jwt.js";
 import { ApiError } from "../../utils/apiError.js";
+import type { ForgotPasswordInput, ResetPasswordInput } from "./auth.schema.js";
 
 export const registerUser = async (data: CreateUserInput) => {
   const normalizedEmail = data.email.toLowerCase().trim();
@@ -117,4 +118,46 @@ export const getCurrentUser = async (userId: string) => {
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };
+};
+
+export const forgotPasswordService = async (data: ForgotPasswordInput) => {
+  const normalizedEmail = data.email.toLowerCase().trim();
+  const user = await userRepository.findByEmailWithPassword(normalizedEmail);
+
+  if (!user) {
+    return;
+  }
+
+  const resetToken = user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false });
+
+  const resetUrl = `https://yourdomain.com/reset-password?token=${resetToken}`;
+
+  try {
+    
+    console.log(`Reset Token for ${user.email}: ${resetToken}`);
+  } catch (error) {
+    user.passwordResetToken = null;
+    user.passwordResetExpires = null;
+    await user.save({ validateBeforeSave: false });
+
+    throw new ApiError(500, "There was an error sending the email. Try again later.");
+  }
+};
+
+export const resetPasswordService = async (data: ResetPasswordInput) => {
+  const user = await userRepository.findByResetToken(data.token);
+
+  if (!user) {
+    throw new ApiError(400, "Token is invalid or has expired");
+  }
+
+  user.password = data.newPassword;
+  user.passwordResetToken = null;
+  user.passwordResetExpires = null;
+
+  user.loginAttempts = 0;
+  user.lockUntil = null;
+
+  await user.save();
 };

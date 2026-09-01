@@ -1,5 +1,6 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 import { hashPassword } from "../../utils/password.js";
+import crypto from "node:crypto";
 
 export type UserRole = "user" | "admin";
 
@@ -21,6 +22,12 @@ export interface IUser extends Document {
   // Custom Instance Methods
   incLoginAttempts(): Promise<IUser>;
   resetLoginAttempts(): Promise<IUser>;
+
+
+  passwordResetToken?: string | null;
+  passwordResetExpires?: Date | null;
+  
+  createPasswordResetToken(): string;
 }
 
 // 2. Schema Definition
@@ -64,6 +71,12 @@ const userSchema = new Schema<IUser>(
       type: Date,
       default: null,
     },
+    passwordResetToken: { 
+      type: String,
+       select: false },
+    passwordResetExpires: {
+       type: Date, 
+       select: false },
   },
   {
     timestamps: true,
@@ -121,6 +134,19 @@ userSchema.methods.resetLoginAttempts = async function (this: IUser) {
     $set: { loginAttempts: 0 },
     $unset: { lockUntil: 1 },
   });
+};
+userSchema.methods.createPasswordResetToken = function (): string {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  // Token የሚያበቃበትን ጊዜ ማዘጋጀት (ለምሳሌ ለ 10 ደቂቃ)
+  this.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+  return resetToken; 
 };
 
 export const User = mongoose.model<IUser>("User", userSchema);
