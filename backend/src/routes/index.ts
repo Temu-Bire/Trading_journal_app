@@ -4,7 +4,7 @@ import v1Routes from "./v1/index.js";
 
 const router = Router();
 
-router.get("/health", (_req, res) => {
+router.get("/", (_req, res) => {
   res.status(200).json({
     success: true,
     message: "Trading Journal API is running",

@@ -1,31 +1,44 @@
 import type { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
 import { verifyAccessToken } from "../utils/jwt.js";
 import { ApiError } from "../utils/apiError.js";
 
 export const authenticate = (
   req: Request,
   _res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   try {
+    // 1. Tokenን ከ Authorization Header ወይም ከ HttpOnly Cookie መውሰድ
+    let token: string | undefined;
+
     const authorization = req.headers.authorization;
-
-    if (!authorization) {
-      throw new ApiError(401, "Authentication required");
+    if (authorization && authorization.startsWith("Bearer ")) {
+      token = authorization.split(" ")[1];
+    } else if (req.cookies?.accessToken) {
+      token = req.cookies.accessToken;
     }
 
-    const [scheme, token] = authorization.split(" ");
-
-    if (scheme !== "Bearer" || !token) {
-      throw new ApiError(401, "Invalid authorization header");
+    if (!token) {
+      throw new ApiError(401, "Authentication required. Please log in.");
     }
 
+    // 2. Token ማረጋገጥ
     const payload = verifyAccessToken(token);
 
+    // 3. የተጠቃሚውን መረጃ በ Request ላይ መጫን
     req.user = payload;
 
     next();
   } catch (error) {
+    // 4. የ JWT ኤረሮችን በግልጽ ለይቶ መያዝ
+    if (error instanceof jwt.TokenExpiredError) {
+      return next(new ApiError(401, "Token has expired. Please refresh your token."));
+    }
+    if (error instanceof jwt.JsonWebTokenError) {
+      return next(new ApiError(401, "Invalid token authentication failed."));
+    }
+
     next(error);
   }
 };
