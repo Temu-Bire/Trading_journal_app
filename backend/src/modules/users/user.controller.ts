@@ -1,42 +1,28 @@
 import type { Request, Response, NextFunction } from "express";
-import { createUser,getCurrentUser} from "./user.service.js";
+import { userRepository } from "./user.repository.js";
 import { ApiError } from "../../utils/apiError.js";
 
-export const createUserController = async (
+export const getUserByIdController = async (
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   try {
-    const user = await createUser(req.body);
+    const { id } = req.params;
 
-    res.status(201).json({
-      success: true,
-      message: "User created successfully",
-      data: user,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-export const getCurrentUserController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const userId = req.user?.userId;
-
-    if (!userId) {
-      return next(new ApiError(401, "Authentication required"));
+    if (!id || typeof id !== "string") {
+      throw new ApiError(400, "Valid User ID is required");
     }
 
-    const user = await getCurrentUser(userId);
+    const user = await userRepository.findById(id);
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
 
     res.status(200).json({
       success: true,
-      message: "Current user retrieved successfully",
-      data: user,
+      data: { user },
     });
   } catch (error) {
     next(error);

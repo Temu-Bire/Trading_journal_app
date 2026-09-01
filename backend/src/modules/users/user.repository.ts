@@ -1,19 +1,16 @@
 import { User } from "./user.model.js";
-import type { IUser } from "./user.model.js";
+import type { CreateUserInput } from "./user.types.js";
 
-export class UserRepository {
+export const userRepository = {
+  async create(data: CreateUserInput) {
+    return await User.create(data);
+  },
+
   async findByEmailWithPassword(email: string) {
     return await User.findOne({ email }).select("+password");
-  }
+  },
 
   async findById(id: string) {
-    return await User.findById(id);
-  }
-
-  
-  async create(userData: Partial<IUser>) {
-    return await User.create(userData);
-  }
-}
-
-export const userRepository = new UserRepository();
+    return await User.findById(id).select("-password");
+  },
+};
