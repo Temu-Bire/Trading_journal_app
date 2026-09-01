@@ -1,7 +1,10 @@
 import type { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
-import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { ApiError } from "../utils/apiError.js";
+
+
+const { JsonWebTokenError, TokenExpiredError } = jwt;
 
 export const errorMiddleware = (
   error: unknown,
