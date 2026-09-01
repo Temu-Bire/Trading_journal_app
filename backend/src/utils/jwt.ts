@@ -1,27 +1,28 @@
 import jwt from "jsonwebtoken";
+import type { Secret } from "jsonwebtoken";
+import type { AccessTokenPayload, RefreshTokenPayload } from "../modules/users/user.types.js";
 import { env } from "../config/env.js";
-import type { AccessTokenPayload, RefreshTokenPayload } from "../modules/auth/auth.types.js";
 
-// generate Access Token 
 export const generateAccessToken = (payload: AccessTokenPayload): string => {
-  return jwt.sign(payload, env.jwtSecret, {
-    expiresIn: env.jwtExpiresIn as jwt.SignOptions["expiresIn"],
-  });
+  const secret: Secret = env.jwtSecret;
+  const expiresIn = (env.jwtExpiresIn || "15m") as string;
+
+  return jwt.sign(payload, secret, { expiresIn } as jwt.SignOptions);
 };
 
-//verify Access Token 
-export const verifyAccessToken = (token: string): AccessTokenPayload => {
-  return jwt.verify(token, env.jwtSecret) as AccessTokenPayload;
-};
-
-// generate Refresh Token 
 export const generateRefreshToken = (payload: RefreshTokenPayload): string => {
-  return jwt.sign(payload, env.jwtRefreshSecret, {
-    expiresIn: env.jwtRefreshExpiresIn as jwt.SignOptions["expiresIn"],
-  });
+  const secret: Secret = env.jwtRefreshSecret;
+  const expiresIn = (env.jwtRefreshExpiresIn || "7d") as string;
+
+  return jwt.sign(payload, secret, { expiresIn } as jwt.SignOptions);
 };
 
-// verify Refresh Token
+export const verifyAccessToken = (token: string): AccessTokenPayload => {
+  const secret: Secret = env.jwtSecret;
+  return jwt.verify(token, secret) as AccessTokenPayload;
+};
+
 export const verifyRefreshToken = (token: string): RefreshTokenPayload => {
-  return jwt.verify(token, env.jwtRefreshSecret) as RefreshTokenPayload;
+  const secret: Secret = env.jwtRefreshSecret;
+  return jwt.verify(token, secret) as RefreshTokenPayload;
 };

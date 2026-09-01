@@ -3,7 +3,9 @@ import { z } from "zod";
 export const loginSchema = z.object({
   email: z
     .string()
-    .email("Please provide a valid email"),
+    .trim()
+    .email("Please provide a valid email")
+    .transform((val) => val.toLowerCase()),
 
   password: z
     .string()

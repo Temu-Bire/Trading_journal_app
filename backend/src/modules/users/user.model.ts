@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
+import { hashPassword } from "../../utils/password.js";
 
 export type UserRole = "user" | "admin";
 
@@ -50,10 +51,23 @@ const userSchema = new Schema<IUser>(
   },
   {
     timestamps: true,
-  },
+    toJSON: {
+      transform(_doc, ret: Record<string, unknown>) {
+        delete ret.password;
+        delete ret.__v;
+        return ret;
+      },
+    },
+  }
 );
 
-export const User = mongoose.model<IUser>(
-  "User",
-  userSchema,
-);
+// Mongoose Pre-save Hook Error Fix
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) {
+    return;
+  }
+
+  this.password = await hashPassword(this.password);
+});
+
+export const User = mongoose.model<IUser>("User", userSchema);

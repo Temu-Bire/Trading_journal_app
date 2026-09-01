@@ -9,7 +9,7 @@ export const authenticate = (
   next: NextFunction
 ) => {
   try {
-    // 1. Tokenን ከ Authorization Header ወይም ከ HttpOnly Cookie መውሰድ
+    // 1. Token from Authorization Header or from HttpOnly Cookie 
     let token: string | undefined;
 
     const authorization = req.headers.authorization;
@@ -23,15 +23,14 @@ export const authenticate = (
       throw new ApiError(401, "Authentication required. Please log in.");
     }
 
-    // 2. Token ማረጋገጥ
+    // 2. Token verification
     const payload = verifyAccessToken(token);
 
-    // 3. የተጠቃሚውን መረጃ በ Request ላይ መጫን
     req.user = payload;
 
     next();
   } catch (error) {
-    // 4. የ JWT ኤረሮችን በግልጽ ለይቶ መያዝ
+    
     if (error instanceof jwt.TokenExpiredError) {
       return next(new ApiError(401, "Token has expired. Please refresh your token."));
     }
