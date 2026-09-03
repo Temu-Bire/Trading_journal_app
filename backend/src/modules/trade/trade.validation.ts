@@ -18,3 +18,4 @@ export const updateTradeSchema = createTradeSchema.partial().extend({
   status: z.enum(["open", "closed", "cancelled"]).optional(),
 });
 
+
