@@ -48,9 +48,9 @@ export interface UpdateTradeDTO {
 }
 
 export interface TradeQueryFilters {
-  page?: number;
-  limit?: number;
-  symbol?: string;
-  status?: TradeStatus;
-  direction?: TradeDirection;
+  page?: number | undefined;
+  limit?: number | undefined;
+  symbol?: string | undefined;
+  status?: TradeStatus | undefined;
+  direction?: TradeDirection | undefined;
 }
