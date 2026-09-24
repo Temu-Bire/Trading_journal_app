@@ -24,6 +24,7 @@ export interface LoginInput {
 export interface AccessTokenPayload {
   userId: string;
   email: string;
+  role: UserRole;
 }
 
 export interface RefreshTokenPayload {

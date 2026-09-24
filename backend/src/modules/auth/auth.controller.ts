@@ -37,7 +37,7 @@ export const registerController = async (
     res.status(201).json({
       success: true,
       message: "User registered successfully",
-      data: { user },
+      data: { user, accessToken },
     });
   } catch (error) {
     next(error);
@@ -58,7 +58,7 @@ export const loginController = async (
     res.status(200).json({
       success: true,
       message: "Login successful",
-      data: { user },
+      data: { user, accessToken },
     });
   } catch (error) {
     next(error);
@@ -83,6 +83,7 @@ export const refreshController = async (
     res.status(200).json({
       success: true,
       message: "Access token refreshed",
+      data: { accessToken },
     });
   } catch (error) {
     next(error);

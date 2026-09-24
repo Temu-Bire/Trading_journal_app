@@ -3,7 +3,7 @@ import type { CreateUserInput, LoginInput } from "../users/user.types.js";
 import { verifyPassword } from "../../utils/password.js";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../../utils/jwt.js";
 import { ApiError } from "../../utils/apiError.js";
-import type { ForgotPasswordInput, ResetPasswordInput } from "./auth.schema.js";
+import type { ForgotPasswordInput, ResetPasswordInput } from "./auth.validation.js";
 
 export const registerUser = async (data: CreateUserInput) => {
   const normalizedEmail = data.email.toLowerCase().trim();
@@ -21,7 +21,11 @@ export const registerUser = async (data: CreateUserInput) => {
 
   const userId = String(newUser._id);
 
-  const accessToken = generateAccessToken({ userId, email: newUser.email });
+  const accessToken = generateAccessToken({
+    userId,
+    email: newUser.email,
+    role: newUser.role,
+  });
   const refreshToken = generateRefreshToken({ userId });
 
   return {
@@ -72,7 +76,11 @@ export const loginUser = async (data: LoginInput) => {
 
   const userId = String(user._id);
 
-  const accessToken = generateAccessToken({ userId, email: user.email});
+  const accessToken = generateAccessToken({
+    userId,
+    email: user.email,
+    role: user.role,
+  });
   const refreshToken = generateRefreshToken({ userId });
 
   return {
@@ -98,6 +106,7 @@ export const refreshAccessToken = async (refreshToken: string) => {
   const newAccessToken = generateAccessToken({
     userId: String(user._id),
     email: user.email,
+    role: user.role,
   });
 
   return { accessToken: newAccessToken };
