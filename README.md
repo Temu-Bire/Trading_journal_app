@@ -265,7 +265,36 @@ npm start
 
 ---
 
-## 7. Docker Deployment
+## 7. Frontend Application (Next.js 15)
+
+A modern, responsive Trading Journal client built with **Next.js 15 App Router**, **TypeScript**, **Tailwind CSS**, **Framer Motion**, and **Recharts**.
+
+### Features
+- **Faithful SaaS Dashboard**: Sparkline metric cards, weekly growth area curve, interactive donut distribution, and recent activity log.
+- **Trade Execution Engine**: Real-time R:R preview, position entry dialog, and modal for closing positions.
+- **Deep Analytics**: Win rate, profit factor, drawdown diagnostics, and market breakdowns.
+- **Playbook & Strategy Tracker**: Track win rates, volume, and net P&L by playbook.
+- **Trader's Journal**: Psychological mindset, setup tagging, and trade reflections feed.
+- **Theme & Preferences**: Persistent Light/Dark mode, risk tolerance settings, and backend diagnostic health checks.
+
+### Running Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Access the client application at `http://localhost:3000`.
+
+### Building Frontend for Production
+```bash
+cd frontend
+npm run build
+npm start
+```
+
+---
+
+## 8. Docker Deployment
 
 ### Building and Running with Docker Compose
 ```bash
