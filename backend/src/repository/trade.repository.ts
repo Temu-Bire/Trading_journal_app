@@ -1,17 +1,31 @@
 import { TradeModel } from "../models/trade.model.js";
-import type { CreateTradeDTO, TradeQueryFilters, ITrade } from "../types/trade.types.js";
+import type {
+  CreateTradeDTO,
+  TradeQueryFilters,
+  ITrade,
+  AllowedSortField,
+} from "../types/trade.types.js";
+import { ALLOWED_SORT_FIELDS } from "../types/trade.types.js";
 
 export class TradeRepository {
   static async create(userId: string, data: CreateTradeDTO): Promise<ITrade> {
     const qty = data.quantity ?? data.lotSize ?? 1;
+    const contractSize = data.contractSize ?? 1;
+    const entryDate = data.entryAt ?? data.entryDate ?? data.entryTime ?? new Date();
+
     const createData: Record<string, any> = {
       ...data,
+      userId,
       quantity: qty,
       lotSize: qty,
-      userId,
+      contractSize,
+      entryAt: entryDate,
+      entryDate,
       status: "open",
     };
-    return (await TradeModel.create(createData)) as unknown as ITrade;
+
+    const doc = await TradeModel.create(createData);
+    return doc.toObject() as unknown as ITrade;
   }
 
   static async findManyByUser(userId: string, filters: TradeQueryFilters) {
@@ -27,12 +41,29 @@ export class TradeRepository {
     if (filters.direction) query.direction = filters.direction;
 
     if (filters.startDate || filters.endDate) {
-      query.entryDate = {};
-      if (filters.startDate) query.entryDate.$gte = filters.startDate;
-      if (filters.endDate) query.entryDate.$lte = filters.endDate;
+      query.$or = [
+        {
+          entryAt: {
+            ...(filters.startDate ? { $gte: filters.startDate } : {}),
+            ...(filters.endDate ? { $lte: filters.endDate } : {}),
+          },
+        },
+        {
+          entryDate: {
+            ...(filters.startDate ? { $gte: filters.startDate } : {}),
+            ...(filters.endDate ? { $lte: filters.endDate } : {}),
+          },
+        },
+      ];
     }
 
-    const sortField = filters.sortBy || "createdAt";
+    // Explicit allowlist validation for sorting
+    const requestedSort = filters.sortBy as AllowedSortField | undefined;
+    const sortField: AllowedSortField =
+      requestedSort && (ALLOWED_SORT_FIELDS as readonly string[]).includes(requestedSort)
+        ? requestedSort
+        : "createdAt";
+
     const sortOrder = filters.sortOrder === "asc" ? 1 : -1;
     const sortOptions = { [sortField]: sortOrder } as Record<string, 1 | -1>;
 
@@ -81,7 +112,12 @@ export class TradeRepository {
     return result.deletedCount > 0;
   }
 
-  static async findAllByUser(userId: string): Promise<ITrade[]> {
-    return await TradeModel.find({ userId }).sort({ entryDate: -1 }).lean<ITrade[]>();
+  static async findAllByUser(
+    userId: string,
+    filter: Record<string, any> = {}
+  ): Promise<ITrade[]> {
+    return await TradeModel.find({ userId, ...filter })
+      .sort({ entryAt: -1, entryDate: -1 })
+      .lean<ITrade[]>();
   }
 }
