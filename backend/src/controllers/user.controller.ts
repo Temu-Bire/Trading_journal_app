@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { Types } from "mongoose";
-import { userRepository } from "../repository/user.repository.js";
+import { getUserByIdService } from "../services/user.service.js";
 import { ApiError } from "../utils/apiError.js";
 
 export const getUserByIdController = async (
@@ -15,16 +15,15 @@ export const getUserByIdController = async (
       throw new ApiError(400, "Valid User ID is required");
     }
 
-    // Ownership check: user can only view their own profile unless role is admin
-    if (req.user?.userId !== id && req.user?.role !== "admin") {
-      throw new ApiError(403, "Access denied: you can only view your own profile");
+    if (!req.user?.userId) {
+      throw new ApiError(401, "Authentication required");
     }
 
-    const user = await userRepository.findById(id);
-
-    if (!user) {
-      throw new ApiError(404, "User not found");
-    }
+    const user = await getUserByIdService(
+      id,
+      req.user.userId,
+      req.user.role
+    );
 
     res.status(200).json({
       success: true,

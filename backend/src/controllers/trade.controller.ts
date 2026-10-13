@@ -90,6 +90,24 @@ export class TradeController {
     }
   }
 
+  static async close(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = TradeController.getUserId(req);
+      const tradeId = req.params.id as string;
+      TradeController.validateTradeId(tradeId);
+
+      const closedTrade = await TradeService.closeTrade(userId, tradeId, req.body);
+
+      return res.status(200).json({
+        success: true,
+        message: "Trade closed successfully",
+        data: closedTrade,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async remove(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = TradeController.getUserId(req);
