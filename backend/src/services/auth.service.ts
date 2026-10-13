@@ -4,6 +4,7 @@ import { verifyPassword } from "../utils/password.js";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../utils/jwt.js";
 import { ApiError } from "../utils/apiError.js";
 import type { ForgotPasswordInput, ResetPasswordInput } from "../validators/auth.validator.js";
+import { env } from "../config/env.js";
 
 export const registerUser = async (data: CreateUserInput) => {
   const normalizedEmail = data.email.toLowerCase().trim();
@@ -140,7 +141,9 @@ export const forgotPasswordService = async (data: ForgotPasswordInput) => {
   await user.save({ validateBeforeSave: false });
 
   try {
-    console.log(`Reset Token for ${user.email}: ${resetToken}`);
+    if (env.nodeEnv !== "production") {
+      console.log(`[DEV/TEST] Reset Token for ${user.email}: ${resetToken}`);
+    }
   } catch (error) {
     user.passwordResetToken = null;
     user.passwordResetExpires = null;
