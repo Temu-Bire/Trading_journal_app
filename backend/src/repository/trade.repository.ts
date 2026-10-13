@@ -120,4 +120,38 @@ export class TradeRepository {
       .sort({ entryAt: -1, entryDate: -1 })
       .lean<ITrade[]>();
   }
+
+  static async getAnalyticsTrades(
+    userId: string,
+    filters: {
+      market?: string | undefined;
+      strategy?: string | undefined;
+      startDate?: Date | undefined;
+      endDate?: Date | undefined;
+    }
+  ): Promise<ITrade[]> {
+    const query: Record<string, any> = { userId };
+
+    if (filters.market) query.market = filters.market.toLowerCase();
+    if (filters.strategy) query.strategy = filters.strategy;
+
+    if (filters.startDate || filters.endDate) {
+      query.$or = [
+        {
+          entryAt: {
+            ...(filters.startDate ? { $gte: filters.startDate } : {}),
+            ...(filters.endDate ? { $lte: filters.endDate } : {}),
+          },
+        },
+        {
+          entryDate: {
+            ...(filters.startDate ? { $gte: filters.startDate } : {}),
+            ...(filters.endDate ? { $lte: filters.endDate } : {}),
+          },
+        },
+      ];
+    }
+
+    return await TradeModel.find(query).lean<ITrade[]>();
+  }
 }

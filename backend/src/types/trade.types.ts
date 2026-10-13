@@ -121,6 +121,39 @@ export interface CloseTradeDTO {
   notes?: string | undefined;
 }
 
+export interface TradeAnalytics {
+  summary: {
+    totalTrades: number;
+    openTrades: number;
+    closedTrades: number;
+    cancelledTrades: number;
+  };
+  performance: {
+    winningTrades: number;
+    losingTrades: number;
+    breakEvenTrades: number;
+    winRate: number;
+    lossRate: number;
+    totalGrossPnl: number;
+    totalNetPnl: number;
+    totalFees: number;
+    grossProfit: number;
+    grossLoss: number;
+    averageWin: number;
+    averageLoss: number;
+    profitFactor: number | null;
+    averageRMultiple: number | null;
+    expectancy: number;
+  };
+}
+
+export interface AnalyticsQueryFilters {
+  market?: string | undefined;
+  strategy?: string | undefined;
+  startDate?: Date | undefined;
+  endDate?: Date | undefined;
+}
+
 export interface TradeQueryFilters {
   page?: number | undefined;
   limit?: number | undefined;

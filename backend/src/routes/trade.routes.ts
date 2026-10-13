@@ -7,6 +7,7 @@ import {
   updateTradeSchema,
   closeTradeSchema,
   tradeQuerySchema,
+  analyticsQuerySchema,
 } from "../validators/trade.validator.js";
 
 const router = Router();
@@ -16,6 +17,7 @@ router.use(authenticate);
 
 router.post("/", validate(createTradeSchema), TradeController.create);
 router.get("/", validate(tradeQuerySchema, "query"), TradeController.getAll);
+router.get("/analytics", validate(analyticsQuerySchema, "query"), TradeController.getAnalytics);
 router.get("/:id", TradeController.getOne);
 router.put("/:id", validate(updateTradeSchema), TradeController.update);
 router.patch("/:id", validate(updateTradeSchema), TradeController.update);

@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { Types } from "mongoose";
 import { TradeService } from "../services/trade.service.js";
-import { tradeQuerySchema } from "../validators/trade.validator.js";
+import { tradeQuerySchema, analyticsQuerySchema } from "../validators/trade.validator.js";
 import { ApiError } from "../utils/apiError.js";
 
 export class TradeController {
@@ -43,6 +43,21 @@ export class TradeController {
         success: true,
         data: result.trades,
         pagination: result.pagination,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getAnalytics(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = TradeController.getUserId(req);
+      const filters = analyticsQuerySchema.parse(req.query);
+
+      const analytics = await TradeService.getAnalytics(userId, filters);
+      return res.status(200).json({
+        success: true,
+        data: analytics,
       });
     } catch (error) {
       next(error);

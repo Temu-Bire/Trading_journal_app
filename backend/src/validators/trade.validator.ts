@@ -187,7 +187,29 @@ export const tradeQuerySchema = z
     }
   );
 
+export const analyticsQuerySchema = z
+  .object({
+    market: z.string().trim().toLowerCase().optional(),
+    strategy: z.string().trim().optional(),
+    startDate: optionalDateSchema,
+    endDate: optionalDateSchema,
+  })
+  .refine(
+    (data) => {
+      if (data.startDate && data.endDate && data.endDate < data.startDate) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "End date must be greater than or equal to start date",
+      path: ["endDate"],
+    }
+  );
+
 export type CreateTradeInput = z.infer<typeof createTradeSchema>;
 export type UpdateTradeInput = z.infer<typeof updateTradeSchema>;
 export type CloseTradeInput = z.infer<typeof closeTradeSchema>;
 export type TradeQueryInput = z.infer<typeof tradeQuerySchema>;
+export type AnalyticsQueryInput = z.infer<typeof analyticsQuerySchema>;
+

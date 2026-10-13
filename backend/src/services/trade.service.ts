@@ -4,6 +4,8 @@ import type {
   UpdateTradeDTO,
   CloseTradeDTO,
   TradeQueryFilters,
+  AnalyticsQueryFilters,
+  TradeAnalytics,
   ITrade,
 } from "../types/trade.types.js";
 import { ApiError } from "../utils/apiError.js";
@@ -319,5 +321,116 @@ export class TradeService {
 
   static async deleteTrade(userId: string, tradeId: string): Promise<boolean> {
     return await TradeRepository.deleteByIdAndUser(tradeId, userId);
+  }
+
+  /**
+   * Analytics calculation engine for user trade journal
+   */
+  static async getAnalytics(
+    userId: string,
+    filters: AnalyticsQueryFilters
+  ): Promise<TradeAnalytics> {
+    const trades = await TradeRepository.getAnalyticsTrades(userId, filters);
+
+    const totalTrades = trades.length;
+    let openTrades = 0;
+    let closedTrades = 0;
+    let cancelledTrades = 0;
+
+    let winningTrades = 0;
+    let losingTrades = 0;
+    let breakEvenTrades = 0;
+
+    let totalGrossPnl = 0;
+    let totalNetPnl = 0;
+    let totalFees = 0;
+    let grossProfit = 0;
+    let grossLoss = 0;
+    let totalRMultiple = 0;
+    let rMultipleCount = 0;
+
+    for (const trade of trades) {
+      if (trade.status === "open") {
+        openTrades++;
+      } else if (trade.status === "cancelled") {
+        cancelledTrades++;
+      } else if (trade.status === "closed") {
+        closedTrades++;
+
+        const netPnl = trade.pnlNet ?? trade.profitLoss ?? 0;
+        const grossPnl = trade.pnlGross ?? netPnl + (trade.fees ?? 0);
+        const fees = trade.fees ?? 0;
+
+        totalGrossPnl += grossPnl;
+        totalNetPnl += netPnl;
+        totalFees += fees;
+
+        if (netPnl > 0) {
+          winningTrades++;
+          grossProfit += netPnl;
+        } else if (netPnl < 0) {
+          losingTrades++;
+          grossLoss += Math.abs(netPnl);
+        } else {
+          breakEvenTrades++;
+        }
+
+        if (trade.rMultiple !== undefined && trade.rMultiple !== null) {
+          totalRMultiple += trade.rMultiple;
+          rMultipleCount++;
+        }
+      }
+    }
+
+    const winRate =
+      closedTrades > 0 ? Number(((winningTrades / closedTrades) * 100).toFixed(2)) : 0;
+    const lossRate =
+      closedTrades > 0 ? Number(((losingTrades / closedTrades) * 100).toFixed(2)) : 0;
+
+    const averageWin =
+      winningTrades > 0 ? Number((grossProfit / winningTrades).toFixed(2)) : 0;
+    const averageLoss =
+      losingTrades > 0 ? Number((grossLoss / losingTrades).toFixed(2)) : 0;
+
+    let profitFactor: number | null = null;
+    if (grossLoss > 0) {
+      profitFactor = Number((grossProfit / grossLoss).toFixed(2));
+    } else if (grossLoss === 0 && grossProfit > 0) {
+      profitFactor = null; // Infinite/undefined when no losses
+    } else {
+      profitFactor = 0;
+    }
+
+    const averageRMultiple =
+      rMultipleCount > 0 ? Number((totalRMultiple / rMultipleCount).toFixed(2)) : null;
+
+    const expectancy =
+      closedTrades > 0 ? Number((totalNetPnl / closedTrades).toFixed(2)) : 0;
+
+    return {
+      summary: {
+        totalTrades,
+        openTrades,
+        closedTrades,
+        cancelledTrades,
+      },
+      performance: {
+        winningTrades,
+        losingTrades,
+        breakEvenTrades,
+        winRate,
+        lossRate,
+        totalGrossPnl: Number(totalGrossPnl.toFixed(2)),
+        totalNetPnl: Number(totalNetPnl.toFixed(2)),
+        totalFees: Number(totalFees.toFixed(2)),
+        grossProfit: Number(grossProfit.toFixed(2)),
+        grossLoss: Number(grossLoss.toFixed(2)),
+        averageWin,
+        averageLoss,
+        profitFactor,
+        averageRMultiple,
+        expectancy,
+      },
+    };
   }
 }
