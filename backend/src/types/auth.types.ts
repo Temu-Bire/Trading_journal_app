@@ -4,4 +4,4 @@ export type {
   LoginInput,
   AccessTokenPayload,
   RefreshTokenPayload,
-} from "../users/user.types.js";
+} from "./user.types.js";

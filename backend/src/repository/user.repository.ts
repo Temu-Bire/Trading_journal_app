@@ -1,6 +1,6 @@
-import { User } from "./user.model.js";
-import type { CreateUserInput } from "./user.types.js";
-import type { IUser } from "./user.model.js";
+import { User } from "../models/user.model.js";
+import type { CreateUserInput } from "../types/user.types.js";
+import type { IUser } from "../models/user.model.js";
 import crypto from "node:crypto";
 
 export const userRepository = {
@@ -23,8 +23,8 @@ export const userRepository = {
   async resetLoginAttempts(user: IUser) {
     return await user.resetLoginAttempts();
   },
-  async findByResetToken(rawToken: string) {
 
+  async findByResetToken(rawToken: string) {
     const hashedToken = crypto
       .createHash("sha256")
       .update(rawToken)
@@ -32,7 +32,7 @@ export const userRepository = {
 
     return await User.findOne({
       passwordResetToken: hashedToken,
-      passwordResetExpires: { $gt: new Date() }, // ያላበቀ መሆኑን ማረጋገጥ
+      passwordResetExpires: { $gt: new Date() },
     }).select("+passwordResetToken +passwordResetExpires");
   },
 };

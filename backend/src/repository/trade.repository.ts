@@ -1,13 +1,17 @@
-import { TradeModel } from "./trade.model.js";
-import type { CreateTradeDTO, UpdateTradeDTO, TradeQueryFilters, ITrade } from "./trade.types.js";
+import { TradeModel } from "../models/trade.model.js";
+import type { CreateTradeDTO, TradeQueryFilters, ITrade } from "../types/trade.types.js";
 
 export class TradeRepository {
   static async create(userId: string, data: CreateTradeDTO): Promise<ITrade> {
-    return await TradeModel.create({
+    const qty = data.quantity ?? data.lotSize ?? 1;
+    const createData: Record<string, any> = {
       ...data,
+      quantity: qty,
+      lotSize: qty,
       userId,
       status: "open",
-    });
+    };
+    return (await TradeModel.create(createData)) as unknown as ITrade;
   }
 
   static async findManyByUser(userId: string, filters: TradeQueryFilters) {
@@ -18,11 +22,26 @@ export class TradeRepository {
     const query: Record<string, any> = { userId };
 
     if (filters.symbol) query.symbol = filters.symbol.toUpperCase();
+    if (filters.market) query.market = filters.market.toLowerCase();
     if (filters.status) query.status = filters.status;
     if (filters.direction) query.direction = filters.direction;
 
+    if (filters.startDate || filters.endDate) {
+      query.entryDate = {};
+      if (filters.startDate) query.entryDate.$gte = filters.startDate;
+      if (filters.endDate) query.entryDate.$lte = filters.endDate;
+    }
+
+    const sortField = filters.sortBy || "createdAt";
+    const sortOrder = filters.sortOrder === "asc" ? 1 : -1;
+    const sortOptions = { [sortField]: sortOrder } as Record<string, 1 | -1>;
+
     const [trades, total] = await Promise.all([
-      TradeModel.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean<ITrade[]>(),
+      TradeModel.find(query)
+        .sort(sortOptions)
+        .skip(skip)
+        .limit(limit)
+        .lean<ITrade[]>(),
       TradeModel.countDocuments(query),
     ]);
 
@@ -32,7 +51,7 @@ export class TradeRepository {
         total,
         page,
         limit,
-        pages: Math.ceil(total / limit),
+        pages: Math.ceil(total / limit) || 1,
       },
     };
   }
@@ -60,5 +79,9 @@ export class TradeRepository {
   static async deleteByIdAndUser(tradeId: string, userId: string): Promise<boolean> {
     const result = await TradeModel.deleteOne({ _id: tradeId, userId });
     return result.deletedCount > 0;
+  }
+
+  static async findAllByUser(userId: string): Promise<ITrade[]> {
+    return await TradeModel.find({ userId }).sort({ entryDate: -1 }).lean<ITrade[]>();
   }
 }

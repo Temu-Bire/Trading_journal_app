@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import type { Secret } from "jsonwebtoken";
-import type { AccessTokenPayload, RefreshTokenPayload } from "../modules/users/user.types.js";
+import type { AccessTokenPayload, RefreshTokenPayload } from "../types/user.types.js";
 import { env } from "../config/env.js";
 
 export const generateAccessToken = (payload: AccessTokenPayload): string => {

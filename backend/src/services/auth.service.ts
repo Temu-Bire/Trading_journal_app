@@ -1,9 +1,9 @@
-import { userRepository } from "../users/user.repository.js";
-import type { CreateUserInput, LoginInput } from "../users/user.types.js";
-import { verifyPassword } from "../../utils/password.js";
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../../utils/jwt.js";
-import { ApiError } from "../../utils/apiError.js";
-import type { ForgotPasswordInput, ResetPasswordInput } from "./auth.validation.js";
+import { userRepository } from "../repository/user.repository.js";
+import type { CreateUserInput, LoginInput } from "../types/user.types.js";
+import { verifyPassword } from "../utils/password.js";
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../utils/jwt.js";
+import { ApiError } from "../utils/apiError.js";
+import type { ForgotPasswordInput, ResetPasswordInput } from "../validators/auth.validator.js";
 
 export const registerUser = async (data: CreateUserInput) => {
   const normalizedEmail = data.email.toLowerCase().trim();
@@ -65,7 +65,6 @@ export const loginUser = async (data: LoginInput) => {
   const passwordMatches = await verifyPassword(data.password, user.password);
 
   if (!passwordMatches) {
-    // የተሳሳተ ሙከራን በ Repository በኩል መዝግቦ መጨመር
     await userRepository.incrementLoginAttempts(user);
     throw new ApiError(401, "Invalid credentials");
   }
@@ -140,10 +139,7 @@ export const forgotPasswordService = async (data: ForgotPasswordInput) => {
   const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
 
-  const resetUrl = `https://yourdomain.com/reset-password?token=${resetToken}`;
-
   try {
-    
     console.log(`Reset Token for ${user.email}: ${resetToken}`);
   } catch (error) {
     user.passwordResetToken = null;

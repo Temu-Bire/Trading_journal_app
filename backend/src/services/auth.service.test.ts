@@ -1,14 +1,14 @@
 import { jest } from "@jest/globals";
-import { userRepository } from "../users/user.repository.js";
+import { userRepository } from "../repository/user.repository.js";
 import {
   registerUser,
   loginUser,
   refreshAccessToken,
   getCurrentUser,
 } from "./auth.service.js";
-import { hashPassword } from "../../utils/password.js";
-import { generateRefreshToken } from "../../utils/jwt.js";
-import { ApiError } from "../../utils/apiError.js";
+import { hashPassword } from "../utils/password.js";
+import { generateRefreshToken } from "../utils/jwt.js";
+import { ApiError } from "../utils/apiError.js";
 
 describe("Auth Service", () => {
   afterEach(() => {

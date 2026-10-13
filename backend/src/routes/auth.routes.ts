@@ -7,16 +7,16 @@ import {
   getMeController,
   forgotPasswordController,
   resetPasswordController,
-} from "./auth.controller.js";
-import { validate } from "../../middleware/validate.middleware.js";
-import { authenticate } from "../../middleware/auth.middleware.js";
+} from "../controllers/auth.controller.js";
+import { validate } from "../middleware/validate.middleware.js";
+import { authenticate } from "../middleware/auth.middleware.js";
 import {
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
-} from "./auth.validation.js";
-import { createUserSchema } from "../users/user.validation.js";
-import { authLimiter } from "../../middleware/rateLimit.middleware.js";
+} from "../validators/auth.validator.js";
+import { createUserSchema } from "../validators/user.validator.js";
+import { authLimiter } from "../middleware/rateLimit.middleware.js";
 
 const router = Router();
 

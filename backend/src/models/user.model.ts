@@ -1,5 +1,5 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
-import { hashPassword } from "../../utils/password.js";
+import { hashPassword } from "../utils/password.js";
 import crypto from "node:crypto";
 
 export type UserRole = "user" | "admin";
@@ -22,7 +22,6 @@ export interface IUser extends Document {
   // Custom Instance Methods
   incLoginAttempts(): Promise<IUser>;
   resetLoginAttempts(): Promise<IUser>;
-
 
   passwordResetToken?: string | null;
   passwordResetExpires?: Date | null;
@@ -72,11 +71,13 @@ const userSchema = new Schema<IUser>(
       default: null,
     },
     passwordResetToken: { 
-      type: String,
-       select: false },
-    passwordResetExpires: {
-       type: Date, 
-       select: false },
+      type: String, 
+      select: false 
+    },
+    passwordResetExpires: { 
+      type: Date, 
+      select: false 
+    },
   },
   {
     timestamps: true,
@@ -107,7 +108,6 @@ userSchema.pre("save", async function () {
 
 // 5. Custom Methods - Lockout Logic
 userSchema.methods.incLoginAttempts = async function (this: IUser) {
-  
   if (this.lockUntil && this.lockUntil < new Date()) {
     return await this.updateOne({
       $set: { loginAttempts: 1 },
@@ -135,6 +135,7 @@ userSchema.methods.resetLoginAttempts = async function (this: IUser) {
     $unset: { lockUntil: 1 },
   });
 };
+
 userSchema.methods.createPasswordResetToken = function (): string {
   const resetToken = crypto.randomBytes(32).toString("hex");
 
@@ -143,7 +144,7 @@ userSchema.methods.createPasswordResetToken = function (): string {
     .update(resetToken)
     .digest("hex");
 
-  // Token የሚያበቃበትን ጊዜ ማዘጋጀት (ለምሳሌ ለ 10 ደቂቃ)
+  // Token expiration (10 minutes)
   this.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
 
   return resetToken; 

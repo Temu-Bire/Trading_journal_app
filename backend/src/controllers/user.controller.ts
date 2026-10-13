@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { Types } from "mongoose";
-import { userRepository } from "./user.repository.js";
-import { ApiError } from "../../utils/apiError.js";
+import { userRepository } from "../repository/user.repository.js";
+import { ApiError } from "../utils/apiError.js";
 
 export const getUserByIdController = async (
   req: Request,

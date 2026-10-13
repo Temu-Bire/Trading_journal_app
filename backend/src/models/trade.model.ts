@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import type { ITrade } from "./trade.types.js";
+import type { ITrade } from "../types/trade.types.js";
 
 const tradeSchema = new Schema<ITrade>(
   {
@@ -7,13 +7,18 @@ const tradeSchema = new Schema<ITrade>(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      index: true, // Speeds up queries scoping trades to specific user
+      index: true,
     },
     symbol: {
       type: String,
       required: true,
       uppercase: true,
       trim: true,
+    },
+    market: {
+      type: String,
+      trim: true,
+      default: "forex",
     },
     direction: {
       type: String,
@@ -29,9 +34,14 @@ const tradeSchema = new Schema<ITrade>(
       type: Number,
       min: 0,
     },
+    quantity: {
+      type: Number,
+      default: 1,
+      min: 0,
+    },
     lotSize: {
       type: Number,
-      required: true,
+      default: 1,
       min: 0,
     },
     stopLoss: {
@@ -42,17 +52,32 @@ const tradeSchema = new Schema<ITrade>(
       type: Number,
       min: 0,
     },
-    entryTime: {
+    entryDate: {
       type: Date,
       default: Date.now,
+      index: true,
     },
-    exitTime: {
+    exitDate: {
       type: Date,
+    },
+    fees: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    riskReward: {
+      type: Number,
+    },
+    strategy: {
+      type: String,
+      trim: true,
+      maxlength: 100,
     },
     status: {
       type: String,
       enum: ["open", "closed", "cancelled"],
       default: "open",
+      index: true,
     },
     notes: {
       type: String,
@@ -67,7 +92,10 @@ const tradeSchema = new Schema<ITrade>(
   }
 );
 
-// Compound index for user trade history queries with pagination
+// Compound indexes for user queries
 tradeSchema.index({ userId: 1, createdAt: -1 });
+tradeSchema.index({ userId: 1, status: 1 });
+tradeSchema.index({ userId: 1, symbol: 1 });
+tradeSchema.index({ userId: 1, entryDate: -1 });
 
 export const TradeModel = model<ITrade>("Trade", tradeSchema);

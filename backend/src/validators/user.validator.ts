@@ -23,6 +23,4 @@ export const createUserSchema = z.object({
     .regex(/[^A-Za-z0-9]/, "Must contain a special character"),
 });
 
-export type CreateUserInput = z.infer<
-  typeof createUserSchema
->;
+export type CreateUserInput = z.infer<typeof createUserSchema>;

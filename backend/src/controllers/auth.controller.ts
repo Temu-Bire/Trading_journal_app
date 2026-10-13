@@ -1,17 +1,23 @@
 import type { Request, Response, NextFunction } from "express";
-import { loginUser, registerUser, refreshAccessToken, getCurrentUser } from "./auth.service.js";
-import { forgotPasswordService, resetPasswordService } from "./auth.service.js";
-import { env } from "../../config/env.js";
-import { ApiError } from "../../utils/apiError.js";
+import {
+  loginUser,
+  registerUser,
+  refreshAccessToken,
+  getCurrentUser,
+  forgotPasswordService,
+  resetPasswordService,
+} from "../services/auth.service.js";
+import { env } from "../config/env.js";
+import { ApiError } from "../utils/apiError.js";
 
 const isProduction = env.nodeEnv === "production";
 
-// የ Cookie አማራጮች (Cookie Options)
+// Cookie Options
 const refreshTokenCookieOptions = {
   httpOnly: true,
   secure: isProduction,
   sameSite: isProduction ? ("strict" as const) : ("lax" as const),
-  path: "/api/v1/auth/refresh", // Refresh Token የሚላከው ለዚህ route ብቻ ነው
+  path: "/api/v1/auth/refresh",
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
