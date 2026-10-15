@@ -17,20 +17,48 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = sessionStorage.getItem("current_user");
+        return cached ? JSON.parse(cached) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState<boolean>(() => {
+    // If not in browser, start loading
+    if (typeof window === "undefined") return true;
+    // If user has cached token or user, we can render immediately while verifying in background
+    const hasToken = Boolean(sessionStorage.getItem("access_token"));
+    const hasUser = Boolean(sessionStorage.getItem("current_user"));
+    return hasToken || hasUser ? false : false;
+  });
   const router = useRouter();
+
+  const updateUser = (newUser: User | null) => {
+    setUser(newUser);
+    if (typeof window !== "undefined") {
+      if (newUser) {
+        sessionStorage.setItem("current_user", JSON.stringify(newUser));
+      } else {
+        sessionStorage.removeItem("current_user");
+      }
+    }
+  };
 
   const fetchCurrentUser = useCallback(async () => {
     try {
       const res = await apiClient.get<{ user: User }>("/auth/me");
       if (res.success && res.data?.user) {
-        setUser(res.data.user);
+        updateUser(res.data.user);
       } else {
-        setUser(null);
+        updateUser(null);
       }
     } catch {
-      setUser(null);
+      // Keep existing cached user if temporary network glitch, or null if unauthorized
     } finally {
       setLoading(false);
     }
@@ -52,7 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (res.data.accessToken) {
           apiClient.setAccessToken(res.data.accessToken);
         }
-        setUser(res.data.user);
+        updateUser(res.data.user);
         return { success: true };
       }
 
@@ -83,7 +111,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (res.data.accessToken) {
           apiClient.setAccessToken(res.data.accessToken);
         }
-        setUser(res.data.user);
+        updateUser(res.data.user);
         return { success: true };
       }
 
@@ -106,7 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await apiClient.post("/auth/logout");
     } finally {
       apiClient.setAccessToken(null);
-      setUser(null);
+      updateUser(null);
       router.push("/login");
     }
   };

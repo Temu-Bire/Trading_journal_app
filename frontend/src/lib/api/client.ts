@@ -59,6 +59,7 @@ class ApiClient {
       ...options,
       headers,
       credentials: "include", // Essential for HttpOnly cookies
+      signal: options.signal ?? (typeof AbortSignal !== "undefined" && "timeout" in AbortSignal ? AbortSignal.timeout(8000) : undefined),
     };
 
     try {
