@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useId, useRef, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { TrendingUp, TrendingDown } from "lucide-react";
 
@@ -27,6 +29,27 @@ export function MetricCard({
   sparklineData,
   className,
 }: MetricCardProps) {
+  const uid = useId();
+  const gradId = `grad-${uid.replace(/:/g, "")}`;
+  const sparkRef = useRef<SVGPathElement>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Animate sparkline draw on mount
+  useEffect(() => {
+    if (mounted && sparkRef.current) {
+      const len = sparkRef.current.getTotalLength();
+      sparkRef.current.style.strokeDasharray = `${len}`;
+      sparkRef.current.style.strokeDashoffset = `${len}`;
+      sparkRef.current.getBoundingClientRect(); // force reflow
+      sparkRef.current.style.transition = "stroke-dashoffset 1.2s ease-out";
+      sparkRef.current.style.strokeDashoffset = "0";
+    }
+  }, [mounted]);
+
   const hasSparkline = Boolean(sparklineData && sparklineData.length >= 2);
   const data = hasSparkline ? sparklineData! : [0, 0];
   const min = Math.min(...data);
@@ -45,44 +68,56 @@ export function MetricCard({
   const colorMap = {
     blue: {
       stroke: "#3B82F6",
-      fill: "url(#blue-grad)",
       stopColor: "#3B82F6",
+      iconGlow: "group-hover:shadow-glow-blue",
     },
     emerald: {
       stroke: "#10B981",
-      fill: "url(#emerald-grad)",
       stopColor: "#10B981",
+      iconGlow: "group-hover:shadow-glow-emerald",
     },
     amber: {
       stroke: "#F59E0B",
-      fill: "url(#amber-grad)",
       stopColor: "#F59E0B",
+      iconGlow: "group-hover:shadow-glow-amber",
     },
     rose: {
       stroke: "#F43F5E",
-      fill: "url(#rose-grad)",
       stopColor: "#F43F5E",
+      iconGlow: "group-hover:shadow-glow-rose",
     },
   };
 
   const activeColor = colorMap[trendColor] || colorMap.blue;
-  const gradId = `${trendColor}-grad-${Math.random().toString(36).substring(2, 7)}`;
 
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border bg-card p-6 shadow-card hover:shadow-md transition-shadow relative overflow-hidden flex flex-col justify-between",
+        "group rounded-2xl border border-border bg-card p-6 shadow-card",
+        "hover:shadow-card-hover hover:-translate-y-0.5 hover:border-primary/20",
+        "transition-all duration-300 relative overflow-hidden flex flex-col justify-between",
+        "gradient-border",
         className
       )}
     >
-      <div>
+      {/* Subtle background glow on hover */}
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl"
+        style={{
+          background: `radial-gradient(ellipse at top right, ${activeColor.stopColor}08 0%, transparent 60%)`,
+        }}
+      />
+
+      <div className="relative">
         {/* Top Header */}
         <div className="flex items-center justify-between gap-2 mb-3">
           <span className="text-sm font-medium text-muted-foreground">{title}</span>
           {icon && (
             <div
               className={cn(
-                "w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors",
+                "w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0",
+                "transition-all duration-300 group-hover:scale-110",
+                activeColor.iconGlow,
                 iconBgColor
               )}
             >
@@ -91,8 +126,13 @@ export function MetricCard({
           )}
         </div>
 
-        {/* Big Metric Value */}
-        <div className="text-3xl font-bold tracking-tight text-foreground mb-2">
+        {/* Big Metric Value with entrance animation */}
+        <div
+          className={cn(
+            "text-3xl font-bold tracking-tight text-foreground mb-2",
+            mounted && "animate-count-up"
+          )}
+        >
           {value}
         </div>
 
@@ -101,8 +141,10 @@ export function MetricCard({
           <div className="flex items-center gap-1.5 text-xs font-medium">
             <span
               className={cn(
-                "flex items-center gap-0.5 font-semibold",
-                change.isPositive !== false ? "text-profit" : "text-loss"
+                "flex items-center gap-0.5 font-semibold px-1.5 py-0.5 rounded-md",
+                change.isPositive !== false
+                  ? "text-profit bg-profit-muted"
+                  : "text-loss bg-loss-muted"
               )}
             >
               {change.isPositive !== false ? (
@@ -119,7 +161,7 @@ export function MetricCard({
 
       {/* Mini Sparkline Chart */}
       {hasSparkline ? (
-        <div className="mt-4 pt-1 w-full h-9">
+        <div className="mt-4 pt-1 w-full h-9 relative">
           <svg
             viewBox={`0 0 ${width} ${height}`}
             className="w-full h-full overflow-visible"
@@ -127,15 +169,19 @@ export function MetricCard({
           >
             <defs>
               <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={activeColor.stopColor} stopOpacity="0.25" />
+                <stop offset="0%" stopColor={activeColor.stopColor} stopOpacity="0.3" />
                 <stop offset="100%" stopColor={activeColor.stopColor} stopOpacity="0.0" />
               </linearGradient>
             </defs>
+            {/* Area fill */}
             <path
               d={`M 0,${points[0]?.split(",")[1]} L ${points.join(" L ")} L ${width},${height} L 0,${height} Z`}
               fill={`url(#${gradId})`}
+              className="transition-all duration-300"
             />
+            {/* Animated line */}
             <path
+              ref={sparkRef}
               d={pathD}
               fill="none"
               stroke={activeColor.stroke}
@@ -143,6 +189,19 @@ export function MetricCard({
               strokeLinecap="round"
               strokeLinejoin="round"
             />
+            {/* End dot */}
+            {points.length > 0 && (() => {
+              const lastPt = points[points.length - 1].split(",");
+              return (
+                <circle
+                  cx={lastPt[0]}
+                  cy={lastPt[1]}
+                  r="3"
+                  fill={activeColor.stroke}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                />
+              );
+            })()}
           </svg>
         </div>
       ) : (
