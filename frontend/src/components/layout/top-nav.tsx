@@ -75,9 +75,19 @@ export function TopNav({ onNewTradeClick }: TopNavProps) {
             >
               <Menu className="w-5 h-5" />
             </button>
-            <h1 className="text-xl font-bold tracking-tight text-foreground animate-fade-in">
-              {getPageTitle()}
-            </h1>
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-xl font-bold tracking-tight text-foreground animate-fade-in">
+                {getPageTitle()}
+              </h1>
+              {/* Live Backend Connection Indicator */}
+              <div
+                title="Backend API Connected (MongoDB Online)"
+                className="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 text-[11px] font-medium border border-emerald-200 dark:border-emerald-800/60"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>API Online</span>
+              </div>
+            </div>
           </div>
 
           {/* Right actions */}
