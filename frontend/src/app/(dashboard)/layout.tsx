@@ -27,24 +27,49 @@ export default function DashboardLayout({
 
   if (loading) {
     return (
-      <div className="flex h-screen w-full bg-background">
-        <div className="hidden lg:block w-64 border-r border-border p-6 space-y-6">
-          <Skeleton className="h-10 w-40" />
-          <div className="space-y-3 pt-6">
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
+      <div className="flex h-screen w-full bg-background animate-fade-in">
+        {/* Sidebar skeleton */}
+        <div className="hidden lg:flex flex-col w-64 border-r border-border p-6 gap-6">
+          <div className="flex items-center gap-3 px-1">
+            <Skeleton className="h-10 w-10 rounded-xl" />
+            <div className="space-y-1.5">
+              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-2.5 w-16" />
+            </div>
+          </div>
+          <div className="space-y-1.5 pt-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton
+                key={i}
+                className="h-10 w-full rounded-xl"
+                style={{ opacity: 1 - i * 0.1 }}
+              />
+            ))}
           </div>
         </div>
-        <div className="flex-1 p-8 space-y-6">
-          <Skeleton className="h-12 w-64" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Skeleton className="h-40 w-full" />
-            <Skeleton className="h-40 w-full" />
-            <Skeleton className="h-40 w-full" />
+        {/* Main skeleton */}
+        <div className="flex-1 flex flex-col">
+          {/* Nav skeleton */}
+          <div className="h-14 border-b border-border px-8 flex items-center justify-between">
+            <Skeleton className="h-7 w-36" />
+            <div className="flex gap-3">
+              <Skeleton className="h-9 w-32 rounded-xl" />
+              <Skeleton className="h-9 w-9 rounded-xl" />
+              <Skeleton className="h-9 w-28 rounded-xl" />
+            </div>
           </div>
-          <Skeleton className="h-80 w-full" />
+          {/* Content skeleton */}
+          <div className="flex-1 p-8 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="h-36 w-full rounded-2xl" />
+              ))}
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+              <Skeleton className="h-72 w-full rounded-2xl lg:col-span-2" />
+              <Skeleton className="h-72 w-full rounded-2xl" />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -62,7 +87,11 @@ export default function DashboardLayout({
       {/* Main content view */}
       <div className="flex-1 flex flex-col min-w-0">
         <TopNav onNewTradeClick={() => setCreateTradeModalOpen(true)} />
-        <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto animate-fade-in">
+        {/* Page entrance animation — keyed on pathname to re-trigger on route change */}
+        <main
+          key={pathname}
+          className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto animate-fade-up"
+        >
           {children}
         </main>
       </div>
@@ -72,7 +101,6 @@ export default function DashboardLayout({
         open={createTradeModalOpen}
         onClose={() => setCreateTradeModalOpen(false)}
         onTradeCreated={() => {
-          // Trigger refresh or router reload
           window.dispatchEvent(new CustomEvent("tj:trade-created"));
         }}
       />
