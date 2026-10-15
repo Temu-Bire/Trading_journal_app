@@ -5,12 +5,26 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Lock, Mail, User as UserIcon } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  User as UserIcon,
+  ArrowRight,
+  CheckCircle2,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { registerSchema, type RegisterFormData } from "@/lib/validations/auth";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/lib/toast";
+
+const benefits = [
+  "Unlimited trade journaling",
+  "P&L and risk analytics",
+  "Strategy playbooks & emotion tracking",
+];
 
 function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,7 +34,10 @@ function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const rawReturnUrl = searchParams.get("returnUrl");
-  const returnUrl = rawReturnUrl && rawReturnUrl.startsWith("/") && !rawReturnUrl.startsWith("//") ? rawReturnUrl : "/overview";
+  const returnUrl =
+    rawReturnUrl && rawReturnUrl.startsWith("/") && !rawReturnUrl.startsWith("//")
+      ? rawReturnUrl
+      : "/overview";
 
   const {
     register,
@@ -44,36 +61,55 @@ function RegisterForm() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="animate-fade-up">
         <h2 className="text-xl font-bold tracking-tight text-foreground">
-          Create Account
+          Create your account
         </h2>
         <p className="text-xs text-muted-foreground mt-1">
-          Start journaling your trades with professional analytics
+          Free forever — no credit card required
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <Input
-          label="Full Name"
-          type="text"
-          placeholder="Alex Morgan"
-          icon={<UserIcon className="w-4 h-4" />}
-          error={errors.name?.message}
-          {...register("name")}
-        />
+      {/* Benefit list */}
+      <div className="space-y-1.5 animate-fade-up delay-50">
+        {benefits.map((b, i) => (
+          <div
+            key={b}
+            className="flex items-center gap-2 text-xs text-muted-foreground"
+            style={{ animationDelay: `${i * 50 + 100}ms` }}
+          >
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+            {b}
+          </div>
+        ))}
+      </div>
 
-        <Input
-          label="Email Address"
-          type="email"
-          placeholder="trader@example.com"
-          icon={<Mail className="w-4 h-4" />}
-          error={errors.email?.message}
-          {...register("email")}
-        />
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5">
+        <div className="animate-fade-up delay-150">
+          <Input
+            label="Full Name"
+            type="text"
+            placeholder="Alex Morgan"
+            icon={<UserIcon className="w-4 h-4" />}
+            error={errors.name?.message}
+            {...register("name")}
+          />
+        </div>
 
-        <div className="relative">
+        <div className="animate-fade-up delay-200">
+          <Input
+            label="Email Address"
+            type="email"
+            placeholder="trader@example.com"
+            icon={<Mail className="w-4 h-4" />}
+            error={errors.email?.message}
+            {...register("email")}
+          />
+        </div>
+
+        <div className="relative animate-fade-up delay-250">
           <Input
             label="Password"
             type={showPassword ? "text" : "password"}
@@ -85,28 +121,39 @@ function RegisterForm() {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-8 text-muted-foreground hover:text-foreground p-1 transition-colors"
+            className="absolute right-3 top-8 text-muted-foreground hover:text-foreground p-1 transition-colors rounded"
             aria-label="Toggle password visibility"
           >
-            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            {showPassword ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4" />
+            )}
           </button>
         </div>
 
-        <Button
-          type="submit"
-          variant="primary"
-          size="lg"
-          className="w-full mt-2"
-          loading={submitting}
-        >
-          Create Free Account
-        </Button>
+        <div className="animate-fade-up delay-300 pt-1">
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            className="w-full shadow-glow-primary"
+            loading={submitting}
+            icon={!submitting ? <ArrowRight className="w-4 h-4" /> : undefined}
+          >
+            {submitting ? "Creating account…" : "Create Free Account"}
+          </Button>
+        </div>
       </form>
 
-      <div className="text-center text-xs text-muted-foreground pt-2 border-t border-border">
+      <div className="text-center text-xs text-muted-foreground pt-2 border-t border-border animate-fade-up delay-400">
         Already have an account?{" "}
         <Link
-          href={returnUrl !== "/overview" ? `/login?returnUrl=${encodeURIComponent(returnUrl)}` : "/login"}
+          href={
+            returnUrl !== "/overview"
+              ? `/login?returnUrl=${encodeURIComponent(returnUrl)}`
+              : "/login"
+          }
           className="text-primary font-semibold hover:underline"
         >
           Sign In
@@ -118,7 +165,13 @@ function RegisterForm() {
 
 export default function RegisterPage() {
   return (
-    <Suspense fallback={<div className="h-40 flex items-center justify-center"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
+    <Suspense
+      fallback={
+        <div className="h-40 flex items-center justify-center">
+          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
       <RegisterForm />
     </Suspense>
   );

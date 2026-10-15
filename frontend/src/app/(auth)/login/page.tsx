@@ -5,12 +5,13 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, ArrowRight, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { loginSchema, type LoginFormData } from "@/lib/validations/auth";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 
 function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -21,7 +22,10 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const rawReturnUrl = searchParams.get("returnUrl");
   // Sanitize returnUrl to prevent open redirects
-  const returnUrl = rawReturnUrl && rawReturnUrl.startsWith("/") && !rawReturnUrl.startsWith("//") ? rawReturnUrl : "/overview";
+  const returnUrl =
+    rawReturnUrl && rawReturnUrl.startsWith("/") && !rawReturnUrl.startsWith("//")
+      ? rawReturnUrl
+      : "/overview";
 
   const {
     register,
@@ -52,26 +56,31 @@ function LoginForm() {
 
   return (
     <div className="space-y-6">
-      <div>
+      {/* Header */}
+      <div className="animate-fade-up">
         <h2 className="text-xl font-bold tracking-tight text-foreground">
-          Sign In
+          Welcome back
         </h2>
         <p className="text-xs text-muted-foreground mt-1">
-          Enter your credentials to access your trading journal
+          Sign in to your trading journal and continue your edge
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <Input
-          label="Email Address"
-          type="email"
-          placeholder="trader@example.com"
-          icon={<Mail className="w-4 h-4" />}
-          error={errors.email?.message}
-          {...register("email")}
-        />
+        {/* Email field */}
+        <div className="animate-fade-up delay-100">
+          <Input
+            label="Email Address"
+            type="email"
+            placeholder="trader@example.com"
+            icon={<Mail className="w-4 h-4" />}
+            error={errors.email?.message}
+            {...register("email")}
+          />
+        </div>
 
-        <div className="relative">
+        {/* Password field */}
+        <div className="relative animate-fade-up delay-150">
           <Input
             label="Password"
             type={showPassword ? "text" : "password"}
@@ -83,19 +92,28 @@ function LoginForm() {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-8 text-muted-foreground hover:text-foreground p-1 transition-colors"
+            className="absolute right-3 top-8 text-muted-foreground hover:text-foreground p-1 transition-colors rounded"
             aria-label="Toggle password visibility"
           >
-            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            {showPassword ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4" />
+            )}
           </button>
         </div>
 
-        <div className="flex items-center justify-between text-xs pt-1">
+        {/* Demo fill + forgot password */}
+        <div className="flex items-center justify-between text-xs pt-0.5 animate-fade-up delay-200">
           <button
             type="button"
             onClick={handleDemoFill}
-            className="text-primary hover:underline font-semibold"
+            className={cn(
+              "flex items-center gap-1 text-primary hover:text-primary-hover font-semibold",
+              "px-2 py-1 rounded-lg hover:bg-primary-muted transition-all duration-200"
+            )}
           >
+            <Sparkles className="w-3 h-3" />
             Fill Demo Account
           </button>
           <Link
@@ -106,21 +124,29 @@ function LoginForm() {
           </Link>
         </div>
 
-        <Button
-          type="submit"
-          variant="primary"
-          size="lg"
-          className="w-full mt-2"
-          loading={submitting}
-        >
-          Sign In
-        </Button>
+        {/* Submit */}
+        <div className="animate-fade-up delay-250">
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            className="w-full mt-1 shadow-glow-primary"
+            loading={submitting}
+            icon={!submitting ? <ArrowRight className="w-4 h-4" /> : undefined}
+          >
+            {submitting ? "Signing in…" : "Sign In"}
+          </Button>
+        </div>
       </form>
 
-      <div className="text-center text-xs text-muted-foreground pt-2 border-t border-border">
+      <div className="text-center text-xs text-muted-foreground pt-2 border-t border-border animate-fade-up delay-300">
         Don&apos;t have an account?{" "}
         <Link
-          href={returnUrl !== "/overview" ? `/register?returnUrl=${encodeURIComponent(returnUrl)}` : "/register"}
+          href={
+            returnUrl !== "/overview"
+              ? `/register?returnUrl=${encodeURIComponent(returnUrl)}`
+              : "/register"
+          }
           className="text-primary font-semibold hover:underline"
         >
           Create an account
@@ -132,7 +158,13 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="h-40 flex items-center justify-center"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
+    <Suspense
+      fallback={
+        <div className="h-40 flex items-center justify-center">
+          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
       <LoginForm />
     </Suspense>
   );
