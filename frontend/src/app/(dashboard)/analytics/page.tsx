@@ -14,16 +14,9 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Cell,
-  PieChart,
-  Pie,
-} from "recharts";
+  AnalyticsOutcomeChart,
+  AnalyticsMarketPerformanceChart,
+} from "@/components/dashboard/analytics-charts";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -242,32 +235,7 @@ export default function AnalyticsPage() {
             />
           ) : (
             <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={outcomeData}>
-                  <XAxis dataKey="name" stroke="#94A3B8" fontSize={12} tickLine={false} />
-                  <YAxis stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} />
-                  <Tooltip
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0]?.payload;
-                        return (
-                          <div className="bg-card border border-border rounded-xl p-2.5 text-xs shadow-dropdown">
-                            <span className="font-semibold text-foreground">
-                              {data.name}: {data.value} trades
-                            </span>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Bar dataKey="value" radius={[8, 8, 0, 0]}>
-                    {outcomeData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              <AnalyticsOutcomeChart data={outcomeData} />
             </div>
           )}
         </Card>
@@ -285,42 +253,7 @@ export default function AnalyticsPage() {
             />
           ) : (
             <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={marketPerformanceData}>
-                  <XAxis dataKey="name" stroke="#94A3B8" fontSize={12} tickLine={false} />
-                  <YAxis stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} />
-                  <Tooltip
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0]?.payload;
-                        return (
-                          <div className="bg-card border border-border rounded-xl p-2.5 text-xs shadow-dropdown">
-                            <span className="font-semibold text-foreground block">
-                              {data.name}
-                            </span>
-                            <span
-                              className={
-                                data.pnl >= 0 ? "text-profit font-bold" : "text-loss font-bold"
-                              }
-                            >
-                              {formatCurrency(data.pnl)}
-                            </span>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Bar dataKey="pnl" radius={[8, 8, 0, 0]}>
-                    {marketPerformanceData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={entry.pnl >= 0 ? "#10B981" : "#F43F5E"}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              <AnalyticsMarketPerformanceChart data={marketPerformanceData} />
             </div>
           )}
         </Card>

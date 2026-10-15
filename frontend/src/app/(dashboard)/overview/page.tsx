@@ -16,16 +16,9 @@ import {
   AlertCircle,
 } from "lucide-react";
 import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
+  OverviewEquityAreaChart,
+  OverviewMarketPieChart,
+} from "@/components/dashboard/overview-charts";
 import { MetricCard } from "@/components/ui/metric-card";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -247,64 +240,7 @@ export default function OverviewPage() {
           />
         ) : (
           <div className="h-72 w-full pt-2">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={equityChartData}>
-                <defs>
-                  <linearGradient id="pnlGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#2563EB" stopOpacity={0.25} />
-                    <stop offset="95%" stopColor="#2563EB" stopOpacity={0.0} />
-                  </linearGradient>
-                </defs>
-                <XAxis
-                  dataKey="name"
-                  stroke="#94A3B8"
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={{ stroke: "#E2E8F0" }}
-                />
-                <YAxis
-                  stroke="#94A3B8"
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(val) => `$${val}`}
-                />
-                <Tooltip
-                  content={({ active, payload }) => {
-                    if (active && payload && payload.length) {
-                      const data = payload[0]?.payload;
-                      return (
-                        <div className="bg-card border border-border rounded-xl shadow-dropdown p-3 text-xs">
-                          <p className="font-semibold text-foreground mb-1">{data.name}</p>
-                          <p className="text-muted-foreground">
-                            Cumulative:{" "}
-                            <span className="font-bold text-primary">
-                              {formatCurrency(data.balance)}
-                            </span>
-                          </p>
-                          {data.symbol && (
-                            <p className="text-[10px] text-muted-foreground mt-0.5">
-                              Trade: {data.symbol} ({formatCurrency(data.pnl)})
-                            </p>
-                          )}
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="balance"
-                  stroke="#2563EB"
-                  strokeWidth={2.5}
-                  fillOpacity={1}
-                  fill="url(#pnlGrad)"
-                  dot={{ r: 4, fill: "#2563EB", strokeWidth: 2, stroke: "#FFFFFF" }}
-                  activeDot={{ r: 6, fill: "#2563EB" }}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            <OverviewEquityAreaChart data={equityChartData} />
           </div>
         )}
       </Card>
@@ -444,35 +380,10 @@ export default function OverviewPage() {
               />
             ) : (
               <>
-                <div className="h-48 w-full relative flex items-center justify-center">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={marketDistributionData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={50}
-                        outerRadius={70}
-                        paddingAngle={3}
-                        dataKey="value"
-                      >
-                        {marketDistributionData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                    </PieChart>
-                  </ResponsiveContainer>
-
-                  {/* Center Counter */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-xl font-bold text-foreground">
-                      {recentTrades.length}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground uppercase font-semibold">
-                      Positions
-                    </span>
-                  </div>
-                </div>
+                <OverviewMarketPieChart
+                  data={marketDistributionData}
+                  totalPositions={recentTrades.length}
+                />
 
                 {/* Distribution Legend */}
                 <div className="space-y-2 mt-4">

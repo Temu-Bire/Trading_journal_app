@@ -25,6 +25,7 @@ import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useApiHealth } from "@/lib/useApiHealth";
 
 interface TopNavProps {
   onNewTradeClick?: () => void;
@@ -47,6 +48,7 @@ export function TopNav({ onNewTradeClick }: TopNavProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dateFilterOpen, setDateFilterOpen] = useState(false);
   const [selectedRange, setSelectedRange] = useState("Last 30 Days");
+  const health = useApiHealth();
 
   const getPageTitle = () => {
     if (pathname.startsWith("/overview")) return "Overview";
@@ -79,13 +81,41 @@ export function TopNav({ onNewTradeClick }: TopNavProps) {
               <h1 className="text-xl font-bold tracking-tight text-foreground animate-fade-in">
                 {getPageTitle()}
               </h1>
-              {/* Live Backend Connection Indicator */}
+              {/* Real-Time Live Backend Health Indicator */}
               <div
-                title="Backend API Connected (MongoDB Online)"
-                className="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 text-[11px] font-medium border border-emerald-200 dark:border-emerald-800/60"
+                title={
+                  health.loading
+                    ? "Checking API connection..."
+                    : health.online
+                    ? `Connected to Backend (Latency: ${health.latencyMs ?? "<40"}ms | DB: ${health.databaseConnected ? "Healthy" : "Degraded"})`
+                    : "Backend server offline or unreachable on port 5000"
+                }
+                className={cn(
+                  "hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border transition-all duration-200",
+                  health.loading
+                    ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800/60"
+                    : health.online
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/60"
+                    : "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800/60"
+                )}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span>API Online</span>
+                <span
+                  className={cn(
+                    "w-1.5 h-1.5 rounded-full",
+                    health.loading
+                      ? "bg-amber-500 animate-pulse"
+                      : health.online
+                      ? "bg-emerald-500 animate-pulse"
+                      : "bg-rose-500"
+                  )}
+                />
+                <span>
+                  {health.loading
+                    ? "Connecting..."
+                    : health.online
+                    ? `API Online ${health.latencyMs ? `(${health.latencyMs}ms)` : ""}`
+                    : "API Offline"}
+                </span>
               </div>
             </div>
           </div>

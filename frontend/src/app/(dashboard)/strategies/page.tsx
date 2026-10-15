@@ -24,15 +24,7 @@ import {
   ExternalLink,
   Info,
 } from "lucide-react";
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Cell,
-} from "recharts";
+import { StrategyPerformanceChart } from "@/components/dashboard/strategy-chart";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -472,64 +464,7 @@ export default function StrategiesPage() {
             </Badge>
           </div>
           <div className="h-[200px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
-                <XAxis
-                  dataKey="name"
-                  stroke="currentColor"
-                  className="text-[11px] text-muted-foreground"
-                  tickLine={false}
-                  axisLine={{ stroke: "var(--border)" }}
-                />
-                <YAxis
-                  stroke="currentColor"
-                  className="text-[11px] text-muted-foreground"
-                  tickLine={false}
-                  axisLine={{ stroke: "var(--border)" }}
-                  tickFormatter={(val) => `$${val}`}
-                />
-                <Tooltip
-                  cursor={{ fill: "rgba(148, 163, 184, 0.08)" }}
-                  content={({ active, payload }) => {
-                    if (active && payload && payload.length) {
-                      const data = payload[0].payload;
-                      return (
-                        <div className="bg-popover text-popover-foreground px-3 py-2 rounded-xl border border-border shadow-md text-xs space-y-1">
-                          <p className="font-semibold text-foreground">{data.fullName}</p>
-                          <div className="flex justify-between gap-4">
-                            <span className="text-muted-foreground">Net P&L:</span>
-                            <span
-                              className={`font-semibold ${
-                                data.pnl >= 0 ? "text-profit" : "text-loss"
-                              }`}
-                            >
-                              {formatCurrency(data.pnl)}
-                            </span>
-                          </div>
-                          <div className="flex justify-between gap-4">
-                            <span className="text-muted-foreground">Win Rate:</span>
-                            <span className="font-medium text-foreground">{data.winRate}%</span>
-                          </div>
-                          <div className="flex justify-between gap-4">
-                            <span className="text-muted-foreground">Trades:</span>
-                            <span className="font-medium text-foreground">{data.trades}</span>
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Bar dataKey="pnl" radius={[6, 6, 0, 0]}>
-                  {chartData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={entry.pnl >= 0 ? "var(--profit)" : "var(--loss)"}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <StrategyPerformanceChart data={chartData} />
           </div>
         </Card>
       )}
