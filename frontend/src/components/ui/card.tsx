@@ -3,12 +3,15 @@ import { cn } from "@/lib/utils";
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   padding?: "none" | "sm" | "md" | "lg";
+  /** When true, adds a hover lift + glow ring effect */
+  interactive?: boolean;
 }
 
 export function Card({
   className,
   children,
   padding = "md",
+  interactive = false,
   ...props
 }: CardProps) {
   const paddings = {
@@ -21,7 +24,9 @@ export function Card({
   return (
     <div
       className={cn(
-        "bg-card text-card-foreground rounded-2xl border border-border shadow-card transition-colors",
+        "bg-card text-card-foreground rounded-2xl border border-border shadow-card transition-all duration-300",
+        interactive &&
+          "hover:shadow-card-hover hover:-translate-y-0.5 hover:border-primary/20 cursor-pointer",
         paddings[padding],
         className
       )}
@@ -51,7 +56,10 @@ export function CardTitle({
 }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={cn("text-base font-semibold leading-none tracking-tight text-foreground", className)}
+      className={cn(
+        "text-base font-semibold leading-none tracking-tight text-foreground",
+        className
+      )}
       {...props}
     >
       {children}

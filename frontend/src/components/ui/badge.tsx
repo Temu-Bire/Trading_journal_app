@@ -12,12 +12,15 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
     | "profit"
     | "loss"
     | "secondary";
+  /** Show animated dot indicator before label */
+  dot?: boolean;
 }
 
 export function Badge({
   className,
   children,
   variant = "default",
+  dot = false,
   ...props
 }: BadgeProps) {
   const variants: Record<NonNullable<BadgeProps["variant"]>, string> = {
@@ -37,15 +40,32 @@ export function Badge({
     outline: "border-border text-foreground bg-transparent",
   };
 
+  const dotColors: Partial<Record<NonNullable<BadgeProps["variant"]>, string>> = {
+    success: "bg-emerald-500",
+    profit: "bg-emerald-500",
+    danger: "bg-rose-500",
+    loss: "bg-rose-500",
+    warning: "bg-amber-500",
+    info: "bg-blue-500",
+  };
+
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border transition-colors",
+        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border transition-all duration-200",
         variants[variant],
         className
       )}
       {...props}
     >
+      {dot && dotColors[variant] && (
+        <span
+          className={cn(
+            "w-1.5 h-1.5 rounded-full flex-shrink-0 animate-pulse",
+            dotColors[variant]
+          )}
+        />
+      )}
       {children}
     </span>
   );
