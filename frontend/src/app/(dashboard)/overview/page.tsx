@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import {
   DollarSign,
@@ -11,6 +11,9 @@ import {
   TrendingDown,
   Clock,
   PieChart as PieIcon,
+  Plus,
+  RefreshCw,
+  AlertCircle,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -36,22 +39,31 @@ import type { ITrade, TradeAnalytics } from "@/types";
 export default function OverviewPage() {
   const [analytics, setAnalytics] = useState<TradeAnalytics | null>(null);
   const [recentTrades, setRecentTrades] = useState<ITrade[]>([]);
+  const [closedTrades, setClosedTrades] = useState<ITrade[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorState, setErrorState] = useState<string | null>(null);
 
   const fetchOverviewData = useCallback(async () => {
     setLoading(true);
+    setErrorState(null);
     try {
-      const [analyticsRes, tradesRes] = await Promise.all([
+      const [analyticsRes, recentTradesRes, closedTradesRes] = await Promise.all([
         apiClient.get<TradeAnalytics>("/trades/analytics"),
-        apiClient.get<ITrade[]>("/trades", { limit: 5, sortBy: "createdAt", sortOrder: "desc" }),
+        apiClient.get<ITrade[]>("/trades", { limit: 6, sortBy: "createdAt", sortOrder: "desc" }),
+        apiClient.get<ITrade[]>("/trades", { limit: 100, status: "closed", sortBy: "exitAt", sortOrder: "asc" }),
       ]);
 
       if (analyticsRes.success && analyticsRes.data) {
         setAnalytics(analyticsRes.data);
       }
-      if (tradesRes.success && tradesRes.data) {
-        setRecentTrades(tradesRes.data);
+      if (recentTradesRes.success && recentTradesRes.data) {
+        setRecentTrades(recentTradesRes.data);
       }
+      if (closedTradesRes.success && closedTradesRes.data) {
+        setClosedTrades(closedTradesRes.data);
+      }
+    } catch (err) {
+      setErrorState(err instanceof Error ? err.message : "Failed to load dashboard data");
     } finally {
       setLoading(false);
     }
@@ -65,36 +77,37 @@ export default function OverviewPage() {
     return () => window.removeEventListener("tj:trade-created", handleCreated);
   }, [fetchOverviewData]);
 
-  // Build cumulative equity chart data from recent trades or analytics
-  const equityChartData = React.useMemo(() => {
-    if (!recentTrades || recentTrades.length === 0) {
-      return [
-        { name: "Mon", pnl: 0, balance: 0 },
-        { name: "Tue", pnl: 0, balance: 0 },
-        { name: "Wed", pnl: 0, balance: 0 },
-        { name: "Thu", pnl: 0, balance: 0 },
-        { name: "Fri", pnl: 0, balance: 0 },
-      ];
+  // Build cumulative equity chart data strictly from real closed trades
+  const equityChartData = useMemo(() => {
+    if (!closedTrades || closedTrades.length === 0) {
+      return [];
     }
 
-    // Sort trades chronologically for curve
-    const sorted = [...recentTrades].reverse();
     let runningTotal = 0;
-    return sorted.map((t, idx) => {
+    return closedTrades.map((t, idx) => {
       const net = t.pnlNet ?? t.profitLoss ?? 0;
       runningTotal += net;
-      const dateLabel = t.entryAt ? new Date(t.entryAt).toLocaleDateString("en-US", { weekday: "short" }) : `T${idx + 1}`;
+      const dateLabel = t.exitAt
+        ? new Date(t.exitAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+        : t.entryAt
+        ? new Date(t.entryAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+        : `#${idx + 1}`;
+
       return {
         name: dateLabel,
         pnl: net,
-        balance: runningTotal,
+        balance: Math.round(runningTotal * 100) / 100,
         symbol: t.symbol,
       };
     });
-  }, [recentTrades]);
+  }, [closedTrades]);
 
-  // Market Distribution Chart Data
-  const marketDistributionData = React.useMemo(() => {
+  // Market Distribution Chart Data calculated from recorded trades
+  const marketDistributionData = useMemo(() => {
+    if (!recentTrades || recentTrades.length === 0) {
+      return [];
+    }
+
     const counts: Record<string, number> = {};
     recentTrades.forEach((t) => {
       const m = t.market || "other";
@@ -110,18 +123,13 @@ export default function OverviewPage() {
       other: "#64748B",
     };
 
-    const total = recentTrades.length || 1;
-    const items = Object.entries(counts).map(([market, count]) => ({
+    const total = recentTrades.length;
+    return Object.entries(counts).map(([market, count]) => ({
       name: market.charAt(0).toUpperCase() + market.slice(1),
       value: count,
       percentage: Number(((count / total) * 100).toFixed(1)),
       color: colors[market.toLowerCase()] || "#64748B",
     }));
-
-    if (items.length === 0) {
-      return [{ name: "Forex", value: 1, percentage: 100, color: "#2563EB" }];
-    }
-    return items;
   }, [recentTrades]);
 
   if (loading) {
@@ -141,10 +149,30 @@ export default function OverviewPage() {
     );
   }
 
+  if (errorState) {
+    return (
+      <div className="p-8 rounded-2xl border border-destructive/20 bg-destructive/5 text-center space-y-4 max-w-lg mx-auto my-12">
+        <AlertCircle className="w-10 h-10 text-destructive mx-auto" />
+        <div>
+          <h3 className="font-bold text-foreground text-lg">Failed to Load Dashboard Data</h3>
+          <p className="text-xs text-muted-foreground mt-1">{errorState}</p>
+        </div>
+        <Button variant="outline" size="sm" onClick={fetchOverviewData} className="gap-2">
+          <RefreshCw className="w-3.5 h-3.5" />
+          Retry Connection
+        </Button>
+      </div>
+    );
+  }
+
   const netPnl = analytics?.performance?.totalNetPnl ?? 0;
   const isPnlPositive = netPnl >= 0;
   const totalTradesCount = analytics?.summary?.totalTrades ?? recentTrades.length;
   const winRateValue = analytics?.performance?.winRate ?? 0;
+  const profitFactorValue = analytics?.performance?.profitFactor;
+  const openTradesCount = analytics?.summary?.openTrades ?? recentTrades.filter((t) => t.status === "open").length;
+
+  const sparklineEquity = equityChartData.length >= 2 ? equityChartData.map((d) => d.balance) : undefined;
 
   return (
     <div className="space-y-6">
@@ -161,35 +189,33 @@ export default function OverviewPage() {
           icon={<DollarSign className="w-5 h-5 text-blue-600 dark:text-blue-400" />}
           iconBgColor="bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400"
           trendColor={isPnlPositive ? "blue" : "rose"}
-          sparklineData={equityChartData.map((d) => d.balance)}
+          sparklineData={sparklineEquity}
         />
 
         <MetricCard
           title="Total Trades"
           value={totalTradesCount.toLocaleString()}
           change={{
-            value: `${analytics?.summary?.openTrades || 0} open`,
+            value: `${openTradesCount} open`,
             isPositive: true,
-            period: "active in market",
+            period: "positions active",
           }}
           icon={<ArrowLeftRight className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />}
           iconBgColor="bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400"
           trendColor="emerald"
-          sparklineData={[5, 8, 12, 10, 15, 20, totalTradesCount || 25]}
         />
 
         <MetricCard
           title="Win Rate"
           value={formatPercent(winRateValue)}
           change={{
-            value: `PF ${analytics?.performance?.profitFactor !== null && analytics?.performance?.profitFactor !== undefined ? analytics.performance.profitFactor : "—"}`,
+            value: profitFactorValue !== null && profitFactorValue !== undefined ? `PF ${profitFactorValue.toFixed(2)}` : "PF —",
             isPositive: winRateValue >= 50,
             period: "profit factor",
           }}
           icon={<Target className="w-5 h-5 text-amber-600 dark:text-amber-400" />}
           iconBgColor="bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400"
           trendColor="amber"
-          sparklineData={[45, 52, 48, 60, 58, 64, winRateValue || 65]}
         />
       </div>
 
@@ -201,21 +227,23 @@ export default function OverviewPage() {
               Performance Curve
             </CardTitle>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Net balance progression across recorded trades
+              Net balance progression across recorded closed trades
             </p>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold px-3 py-1 rounded-lg border border-border bg-card text-foreground">
-              Cumulative Net P&L
+              Cumulative Net P&L ({closedTrades.length} Closed)
             </span>
           </div>
         </div>
 
-        {recentTrades.length === 0 ? (
+        {equityChartData.length === 0 ? (
           <EmptyState
             icon={<TrendingUp className="w-6 h-6" />}
             title="No performance curve yet"
-            description="Log your first trade to begin charting your cumulative trading edge."
+            description="Log and close trade positions to begin charting your actual cumulative edge."
+            actionLabel="Log a Trade"
+            actionHref="/trades/new"
           />
         ) : (
           <div className="h-72 w-full pt-2">
@@ -249,7 +277,7 @@ export default function OverviewPage() {
                         <div className="bg-card border border-border rounded-xl shadow-dropdown p-3 text-xs">
                           <p className="font-semibold text-foreground mb-1">{data.name}</p>
                           <p className="text-muted-foreground">
-                            Balance:{" "}
+                            Cumulative:{" "}
                             <span className="font-bold text-primary">
                               {formatCurrency(data.balance)}
                             </span>
@@ -292,7 +320,7 @@ export default function OverviewPage() {
               </CardTitle>
               <Link href="/trades">
                 <Button variant="ghost" size="sm" className="text-xs text-primary gap-1">
-                  View All <ArrowUpRight className="w-3.5 h-3.5" />
+                  View All Trades <ArrowUpRight className="w-3.5 h-3.5" />
                 </Button>
               </Link>
             </div>
@@ -302,6 +330,8 @@ export default function OverviewPage() {
                 icon={<Clock className="w-5 h-5" />}
                 title="No trades recorded"
                 description="Your trade history will appear here once you enter your first position."
+                actionLabel="Log First Trade"
+                actionHref="/trades/new"
               />
             ) : (
               <div className="overflow-x-auto">
@@ -335,9 +365,12 @@ export default function OverviewPage() {
                                 {trade.direction === "long" ? "L" : "S"}
                               </div>
                               <div>
-                                <span className="font-bold text-foreground block text-sm">
+                                <Link
+                                  href={`/trades/${trade._id}`}
+                                  className="font-bold text-foreground hover:text-primary transition-colors block text-sm"
+                                >
                                   {trade.symbol}
-                                </span>
+                                </Link>
                                 <span className="text-[10px] text-muted-foreground uppercase">
                                   {trade.market}
                                 </span>
@@ -346,9 +379,7 @@ export default function OverviewPage() {
                           </td>
                           <td className="py-3">
                             <Badge
-                              variant={
-                                trade.direction === "long" ? "info" : "danger"
-                              }
+                              variant={trade.direction === "long" ? "info" : "danger"}
                               className="capitalize text-[10px] px-2"
                             >
                               {trade.direction}
@@ -383,76 +414,92 @@ export default function OverviewPage() {
             )}
           </div>
 
-          <div className="pt-4 border-t border-border mt-4">
+          <div className="pt-4 border-t border-border mt-4 flex items-center justify-between">
+            <Link href="/trades/new">
+              <Button variant="outline" size="sm" className="text-xs font-semibold gap-1.5">
+                <Plus className="w-3.5 h-3.5" />
+                New Trade
+              </Button>
+            </Link>
             <Link href="/trades">
-              <Button variant="outline" size="sm" className="w-full text-xs font-semibold">
+              <Button variant="ghost" size="sm" className="text-xs font-semibold text-primary">
                 View All Activity
               </Button>
             </Link>
           </div>
         </Card>
 
-        {/* Right Card (1 Col): Market Distribution Donut matching "Top Channels" */}
+        {/* Right Card (1 Col): Market Distribution Donut */}
         <Card className="p-6 flex flex-col justify-between">
           <div>
             <CardTitle className="text-base font-bold text-foreground mb-4">
               Market Distribution
             </CardTitle>
 
-            <div className="h-48 w-full relative flex items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={marketDistributionData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={70}
-                    paddingAngle={3}
-                    dataKey="value"
-                  >
-                    {marketDistributionData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
+            {marketDistributionData.length === 0 ? (
+              <EmptyState
+                icon={<PieIcon className="w-5 h-5" />}
+                title="No market distribution"
+                description="Positions you log will reflect here categorized by asset class."
+              />
+            ) : (
+              <>
+                <div className="h-48 w-full relative flex items-center justify-center">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={marketDistributionData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={50}
+                        outerRadius={70}
+                        paddingAngle={3}
+                        dataKey="value"
+                      >
+                        {marketDistributionData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
 
-              {/* Center Counter */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-xl font-bold text-foreground">
-                  {recentTrades.length}
-                </span>
-                <span className="text-[10px] text-muted-foreground uppercase font-semibold">
-                  Positions
-                </span>
-              </div>
-            </div>
-
-            {/* Distribution Legend matching screenshot list style */}
-            <div className="space-y-2 mt-4">
-              {marketDistributionData.map((item) => (
-                <div
-                  key={item.name}
-                  className="flex items-center justify-between text-xs py-0.5"
-                >
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-2.5 h-2.5 rounded-full"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span className="text-muted-foreground font-medium">{item.name}</span>
+                  {/* Center Counter */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <span className="text-xl font-bold text-foreground">
+                      {recentTrades.length}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground uppercase font-semibold">
+                      Positions
+                    </span>
                   </div>
-                  <span className="font-bold text-foreground">{item.percentage}%</span>
                 </div>
-              ))}
-            </div>
+
+                {/* Distribution Legend */}
+                <div className="space-y-2 mt-4">
+                  {marketDistributionData.map((item) => (
+                    <div
+                      key={item.name}
+                      className="flex items-center justify-between text-xs py-0.5"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-2.5 h-2.5 rounded-full"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <span className="text-muted-foreground font-medium">{item.name}</span>
+                      </div>
+                      <span className="font-bold text-foreground">{item.percentage}%</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
           <div className="pt-4 border-t border-border mt-4">
             <Link href="/analytics">
               <Button variant="outline" size="sm" className="w-full text-xs font-semibold">
-                View Full Report
+                View Full Analytics Report
               </Button>
             </Link>
           </div>

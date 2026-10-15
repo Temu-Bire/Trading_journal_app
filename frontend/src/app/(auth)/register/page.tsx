@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock, Mail, User as UserIcon } from "lucide-react";
@@ -12,12 +12,15 @@ import { registerSchema, type RegisterFormData } from "@/lib/validations/auth";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/lib/toast";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { register: registerUser } = useAuth();
   const { error, success } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const rawReturnUrl = searchParams.get("returnUrl");
+  const returnUrl = rawReturnUrl && rawReturnUrl.startsWith("/") && !rawReturnUrl.startsWith("//") ? rawReturnUrl : "/overview";
 
   const {
     register,
@@ -34,7 +37,7 @@ export default function RegisterPage() {
 
     if (result.success) {
       success("Account created successfully!");
-      router.push("/overview");
+      router.push(returnUrl);
     } else {
       error(result.message || "Registration failed. Try a different email.");
     }
@@ -102,10 +105,21 @@ export default function RegisterPage() {
 
       <div className="text-center text-xs text-muted-foreground pt-2 border-t border-border">
         Already have an account?{" "}
-        <Link href="/login" className="text-primary font-semibold hover:underline">
+        <Link
+          href={returnUrl !== "/overview" ? `/login?returnUrl=${encodeURIComponent(returnUrl)}` : "/login"}
+          className="text-primary font-semibold hover:underline"
+        >
           Sign In
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="h-40 flex items-center justify-center"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
+      <RegisterForm />
+    </Suspense>
   );
 }

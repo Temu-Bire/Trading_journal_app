@@ -17,7 +17,7 @@ const envSchema = z.object({
     ? z.string().default("test-jwt-refresh-secret-min-32-chars-length")
     : z.string().min(10, "JWT_REFRESH_SECRET must be at least 10 characters"),
   JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
-  CLIENT_URL: z.string().default("http://localhost:5173"),
+  CLIENT_URL: z.string().default("http://localhost:3000"),
 });
 
 const parsed = envSchema.safeParse(process.env);

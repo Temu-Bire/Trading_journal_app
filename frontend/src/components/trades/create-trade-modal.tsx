@@ -27,13 +27,24 @@ const marketOptions = [
   { value: "other", label: "Other" },
 ];
 
+import { useAuth } from "@/lib/auth";
+import { getStrategies, IStrategy } from "@/lib/strategies";
+
 export function CreateTradeModal({
   open,
   onClose,
   onTradeCreated,
 }: CreateTradeModalProps) {
+  const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
+  const [strategies, setStrategies] = useState<IStrategy[]>([]);
   const { success, error } = useToast();
+
+  React.useEffect(() => {
+    if (open) {
+      setStrategies(getStrategies(user?.id));
+    }
+  }, [open, user?.id]);
 
   const {
     register,
@@ -229,12 +240,20 @@ export function CreateTradeModal({
             3. Journaling
           </h4>
           <div className="space-y-3">
-            <Input
-              label="Strategy / Setup"
-              placeholder="e.g. Break & Retest, Trend Continuation"
-              error={errors.strategy?.message}
-              {...register("strategy")}
-            />
+            <div>
+              <Input
+                label="Strategy / Setup"
+                placeholder="e.g. Order Block & FVG Retest"
+                list="modal-strategies-datalist"
+                error={errors.strategy?.message}
+                {...register("strategy")}
+              />
+              <datalist id="modal-strategies-datalist">
+                {strategies.map((s) => (
+                  <option key={s.id} value={s.name} />
+                ))}
+              </datalist>
+            </div>
 
             <div>
               <label className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5">

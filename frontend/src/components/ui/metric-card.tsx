@@ -24,23 +24,23 @@ export function MetricCard({
   icon,
   iconBgColor = "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400",
   trendColor = "blue",
-  sparklineData = [10, 15, 12, 18, 14, 22, 28],
+  sparklineData,
   className,
 }: MetricCardProps) {
-  // Generate simple smooth SVG sparkline path
-  const min = Math.min(...sparklineData);
-  const max = Math.max(...sparklineData);
+  const hasSparkline = Boolean(sparklineData && sparklineData.length >= 2);
+  const data = hasSparkline ? sparklineData! : [0, 0];
+  const min = Math.min(...data);
+  const max = Math.max(...data);
   const range = max - min || 1;
   const width = 160;
   const height = 36;
-  const points = sparklineData.map((val, idx) => {
-    const x = (idx / (sparklineData.length - 1)) * width;
+  const points = data.map((val, idx) => {
+    const x = (idx / (data.length - 1)) * width;
     const y = height - ((val - min) / range) * (height - 8) - 4;
     return `${x},${y}`;
   });
 
   const pathD = `M ${points.join(" L ")}`;
-  const areaD = `${pathD} L ${width},${height} L 0 revolutionary L 0,${height} Z`.replace("revolutionary", "");
 
   const colorMap = {
     blue: {
@@ -118,32 +118,36 @@ export function MetricCard({
       </div>
 
       {/* Mini Sparkline Chart */}
-      <div className="mt-4 pt-1 w-full h-9">
-        <svg
-          viewBox={`0 0 ${width} ${height}`}
-          className="w-full h-full overflow-visible"
-          preserveAspectRatio="none"
-        >
-          <defs>
-            <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={activeColor.stopColor} stopOpacity="0.25" />
-              <stop offset="100%" stopColor={activeColor.stopColor} stopOpacity="0.0" />
-            </linearGradient>
-          </defs>
-          <path
-            d={`M 0,${points[0]?.split(",")[1]} L ${points.join(" L ")} L ${width},${height} L 0,${height} Z`}
-            fill={`url(#${gradId})`}
-          />
-          <path
-            d={pathD}
-            fill="none"
-            stroke={activeColor.stroke}
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
+      {hasSparkline ? (
+        <div className="mt-4 pt-1 w-full h-9">
+          <svg
+            viewBox={`0 0 ${width} ${height}`}
+            className="w-full h-full overflow-visible"
+            preserveAspectRatio="none"
+          >
+            <defs>
+              <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={activeColor.stopColor} stopOpacity="0.25" />
+                <stop offset="100%" stopColor={activeColor.stopColor} stopOpacity="0.0" />
+              </linearGradient>
+            </defs>
+            <path
+              d={`M 0,${points[0]?.split(",")[1]} L ${points.join(" L ")} L ${width},${height} L 0,${height} Z`}
+              fill={`url(#${gradId})`}
+            />
+            <path
+              d={pathD}
+              fill="none"
+              stroke={activeColor.stroke}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+      ) : (
+        <div className="mt-4 h-9" />
+      )}
     </div>
   );
 }

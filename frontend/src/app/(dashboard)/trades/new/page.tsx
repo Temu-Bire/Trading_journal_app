@@ -24,10 +24,19 @@ const marketOptions = [
   { value: "other", label: "Other" },
 ];
 
+import { useAuth } from "@/lib/auth";
+import { getStrategies, IStrategy } from "@/lib/strategies";
+
 export default function CreateTradePage() {
+  const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
+  const [strategies, setStrategies] = useState<IStrategy[]>([]);
   const router = useRouter();
   const { success, error } = useToast();
+
+  React.useEffect(() => {
+    setStrategies(getStrategies(user?.id));
+  }, [user?.id]);
 
   const {
     register,
@@ -230,12 +239,20 @@ export default function CreateTradePage() {
               3. Strategy & Journaling Notes
             </h4>
             <div className="space-y-4">
-              <Input
-                label="Strategy Setup"
-                placeholder="e.g. Support Bounce, Liquidity Sweep"
-                error={errors.strategy?.message}
-                {...register("strategy")}
-              />
+              <div>
+                <Input
+                  label="Strategy Setup"
+                  placeholder="e.g. Order Block & FVG Retest"
+                  list="page-strategies-datalist"
+                  error={errors.strategy?.message}
+                  {...register("strategy")}
+                />
+                <datalist id="page-strategies-datalist">
+                  {strategies.map((s) => (
+                    <option key={s.id} value={s.name} />
+                  ))}
+                </datalist>
+              </div>
 
               <div>
                 <label className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5">

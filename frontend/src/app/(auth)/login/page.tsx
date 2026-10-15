@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
@@ -12,12 +12,16 @@ import { loginSchema, type LoginFormData } from "@/lib/validations/auth";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/lib/toast";
 
-export default function LoginPage() {
+function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { login } = useAuth();
   const { error, success } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const rawReturnUrl = searchParams.get("returnUrl");
+  // Sanitize returnUrl to prevent open redirects
+  const returnUrl = rawReturnUrl && rawReturnUrl.startsWith("/") && !rawReturnUrl.startsWith("//") ? rawReturnUrl : "/overview";
 
   const {
     register,
@@ -35,7 +39,7 @@ export default function LoginPage() {
 
     if (result.success) {
       success("Welcome back!");
-      router.push("/overview");
+      router.push(returnUrl);
     } else {
       error(result.message || "Invalid email or password");
     }
@@ -115,10 +119,21 @@ export default function LoginPage() {
 
       <div className="text-center text-xs text-muted-foreground pt-2 border-t border-border">
         Don&apos;t have an account?{" "}
-        <Link href="/register" className="text-primary font-semibold hover:underline">
+        <Link
+          href={returnUrl !== "/overview" ? `/register?returnUrl=${encodeURIComponent(returnUrl)}` : "/register"}
+          className="text-primary font-semibold hover:underline"
+        >
           Create an account
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="h-40 flex items-center justify-center"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

@@ -16,6 +16,7 @@ import {
   Target,
   BookOpen,
   Settings,
+  HelpCircle,
   LogOut,
 } from "lucide-react";
 import Link from "next/link";
@@ -35,6 +36,7 @@ const navItems = [
   { name: "Strategies", href: "/strategies", icon: Target },
   { name: "Journal", href: "/journal", icon: BookOpen },
   { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Help & Support", href: "/help", icon: HelpCircle },
 ];
 
 export function TopNav({ onNewTradeClick }: TopNavProps) {
@@ -53,6 +55,7 @@ export function TopNav({ onNewTradeClick }: TopNavProps) {
     if (pathname.startsWith("/strategies")) return "Strategies";
     if (pathname.startsWith("/journal")) return "Journal";
     if (pathname.startsWith("/settings")) return "Settings";
+    if (pathname.startsWith("/help")) return "Help & Support";
     return "Dashboard";
   };
 
