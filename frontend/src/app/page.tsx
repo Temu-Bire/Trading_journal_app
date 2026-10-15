@@ -26,14 +26,7 @@ import {
   ChevronRight,
   Check,
 } from "lucide-react";
-import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-} from "recharts";
+import { PreviewEquityChart } from "@/components/trades/preview-equity-chart";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { Button } from "@/components/ui/button";
@@ -435,57 +428,7 @@ export default function LandingPage() {
                   </div>
 
                   <div className="h-56 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={previewCurveData}>
-                        <defs>
-                          <linearGradient id="landingCurveGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#2563EB" stopOpacity={0.25} />
-                            <stop offset="95%" stopColor="#2563EB" stopOpacity={0.0} />
-                          </linearGradient>
-                        </defs>
-                        <XAxis
-                          dataKey="name"
-                          stroke="#94A3B8"
-                          fontSize={11}
-                          tickLine={false}
-                          axisLine={{ stroke: "#E2E8F0" }}
-                        />
-                        <YAxis
-                          stroke="#94A3B8"
-                          fontSize={11}
-                          tickLine={false}
-                          axisLine={false}
-                          tickFormatter={(val) => `$${val}`}
-                        />
-                        <Tooltip
-                          content={({ active, payload }) => {
-                            if (active && payload && payload.length) {
-                              const data = payload[0]?.payload;
-                              return (
-                                <div className="bg-card border border-border rounded-xl shadow-dropdown p-2.5 text-xs">
-                                  <p className="font-semibold text-foreground">{data.name}</p>
-                                  <p className="text-muted-foreground mt-0.5">
-                                    Balance:{" "}
-                                    <span className="font-bold text-primary">
-                                      ${data.balance.toLocaleString()}
-                                    </span>
-                                  </p>
-                                </div>
-                              );
-                            }
-                            return null;
-                          }}
-                        />
-                        <Area
-                          type="monotone"
-                          dataKey="balance"
-                          stroke="#2563EB"
-                          strokeWidth={2.5}
-                          fill="url(#landingCurveGrad)"
-                          dot={{ r: 3, fill: "#2563EB" }}
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
+                    <PreviewEquityChart data={previewCurveData} />
                   </div>
                 </Card>
 
@@ -1001,7 +944,7 @@ export default function LandingPage() {
                 System Architecture
               </p>
               <p className="text-muted-foreground">
-                Built with Next.js 15, TypeScript, Tailwind CSS, Recharts, and Express API.
+                Engineered with high-performance charting, TypeScript, and real-time financial analytics.
               </p>
               <div className="flex items-center gap-2 pt-2">
                 <span className="w-2 h-2 rounded-full bg-profit animate-pulse" />

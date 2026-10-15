@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   title: "Trading Journal Pro - Financial Performance & Analytics",
   description:
     "Record, manage, and analyze trading performance across Forex, Crypto, Stocks, and Commodities.",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
