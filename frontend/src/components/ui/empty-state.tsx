@@ -25,30 +25,38 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center text-center p-8 sm:p-12 rounded-2xl border border-dashed border-border bg-card/50",
+        "flex flex-col items-center justify-center text-center p-8 sm:p-12",
+        "rounded-2xl border border-dashed border-border bg-card/50",
+        "animate-fade-up",
         className
       )}
     >
       {icon && (
-        <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center text-muted-foreground mb-4">
-          {icon}
+        <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center text-muted-foreground mb-5 animate-float shadow-inner group-hover:shadow-card transition-all duration-300">
+          <div className="w-6 h-6">{icon}</div>
         </div>
       )}
-      <h4 className="text-base font-semibold text-foreground mb-1">{title}</h4>
-      <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mb-6">
+      <h4 className="text-base font-semibold text-foreground mb-1.5 animate-fade-up delay-100">
+        {title}
+      </h4>
+      <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mb-6 animate-fade-up delay-200">
         {description}
       </p>
       {actionLabel && actionHref && (
-        <Link href={actionHref}>
-          <Button variant="primary" size="md">
-            {actionLabel}
-          </Button>
-        </Link>
+        <div className="animate-fade-up delay-300">
+          <Link href={actionHref}>
+            <Button variant="primary" size="md" className="shadow-glow-primary">
+              {actionLabel}
+            </Button>
+          </Link>
+        </div>
       )}
       {actionLabel && !actionHref && onAction && (
-        <Button variant="primary" size="md" onClick={onAction}>
-          {actionLabel}
-        </Button>
+        <div className="animate-fade-up delay-300">
+          <Button variant="primary" size="md" onClick={onAction} className="shadow-glow-primary">
+            {actionLabel}
+          </Button>
+        </div>
       )}
     </div>
   );
