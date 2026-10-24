@@ -105,20 +105,20 @@ export function CreateTradeModal({
     <Dialog
       open={open}
       onClose={onClose}
-      title="Create New Trade"
-      description="Record a new trade entry with execution parameters and risk targets."
+      title="New Trade"
+      description="Record a new trade entry with execution details."
       maxWidth="lg"
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* Section 1: Instrument */}
         <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
-            1. Instrument
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2.5">
+            Instrument
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Input
               label="Symbol"
-              placeholder="e.g. EURUSD, AAPL, BTC"
+              placeholder="e.g. EURUSD"
               error={errors.symbol?.message}
               {...register("symbol")}
             />
@@ -166,9 +166,9 @@ export function CreateTradeModal({
 
         {/* Section 2: Execution & Risk Parameters */}
         <div>
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              2. Execution & Risk
+          <div className="flex items-center justify-between mb-2.5">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Execution & Risk
             </h4>
             {plannedRR && (
               <span className="text-xs font-semibold text-primary bg-primary-muted px-2 py-0.5 rounded-lg">
@@ -181,7 +181,7 @@ export function CreateTradeModal({
               label="Entry Price"
               type="number"
               step="any"
-              placeholder="100.00"
+              placeholder="0.00"
               error={errors.entryPrice?.message}
               {...register("entryPrice")}
             />
@@ -219,7 +219,7 @@ export function CreateTradeModal({
               label="Contract Size"
               type="number"
               step="any"
-              placeholder="1 (100,000 for standard FX)"
+              placeholder="1"
               error={errors.contractSize?.message}
               {...register("contractSize")}
             />
@@ -234,16 +234,16 @@ export function CreateTradeModal({
           </div>
         </div>
 
-        {/* Section 3: Journal & Strategy */}
+        {/* Section 3: Notes & Setup */}
         <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
-            3. Journaling
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2.5">
+            Setup & Notes (Optional)
           </h4>
           <div className="space-y-3">
             <div>
               <Input
-                label="Strategy / Setup"
-                placeholder="e.g. Order Block & FVG Retest"
+                label="Strategy"
+                placeholder="e.g. Trend Breakout"
                 list="modal-strategies-datalist"
                 error={errors.strategy?.message}
                 {...register("strategy")}
@@ -257,11 +257,11 @@ export function CreateTradeModal({
 
             <div>
               <label className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5">
-                Notes & Rationale
+                Notes
               </label>
               <textarea
-                rows={3}
-                placeholder="Why did you take this trade? Any psychological or emotional factors?"
+                rows={2}
+                placeholder="Notes or entry reason..."
                 className="w-full rounded-xl border border-input bg-card px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
                 {...register("notes")}
               />

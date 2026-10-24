@@ -118,13 +118,13 @@ export default function CreateTradePage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* 1. Instrument */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
-              1. Instrument & Direction
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+              Instrument & Direction
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Input
                 label="Symbol"
-                placeholder="e.g. EURUSD, NVDA, ETH"
+                placeholder="e.g. EURUSD"
                 error={errors.symbol?.message}
                 {...register("symbol")}
               />
@@ -172,21 +172,21 @@ export default function CreateTradePage() {
 
           {/* 2. Execution */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
-              2. Execution & Risk Parameters
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+              Execution & Risk
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               <Input
                 label="Entry Price"
                 type="number"
                 step="any"
-                placeholder="100.00"
+                placeholder="0.00"
                 error={errors.entryPrice?.message}
                 {...register("entryPrice")}
               />
 
               <Input
-                label="Quantity / Units"
+                label="Quantity"
                 type="number"
                 step="any"
                 placeholder="1"
@@ -218,7 +218,7 @@ export default function CreateTradePage() {
                 label="Contract Size"
                 type="number"
                 step="any"
-                placeholder="1 (100,000 for standard FX lot)"
+                placeholder="1"
                 error={errors.contractSize?.message}
                 {...register("contractSize")}
               />
@@ -235,14 +235,14 @@ export default function CreateTradePage() {
 
           {/* 3. Journal */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
-              3. Strategy & Journaling Notes
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+              Setup & Notes (Optional)
             </h4>
             <div className="space-y-4">
               <div>
                 <Input
-                  label="Strategy Setup"
-                  placeholder="e.g. Order Block & FVG Retest"
+                  label="Strategy"
+                  placeholder="e.g. Trend Breakout"
                   list="page-strategies-datalist"
                   error={errors.strategy?.message}
                   {...register("strategy")}
@@ -256,11 +256,11 @@ export default function CreateTradePage() {
 
               <div>
                 <label className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5">
-                  Trade Rationale & Psychology
+                  Notes
                 </label>
                 <textarea
-                  rows={4}
-                  placeholder="Record market context, timeframes, emotional state, and reasons for taking this setup..."
+                  rows={3}
+                  placeholder="Notes or entry reason..."
                   className="w-full rounded-xl border border-input bg-card px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
                   {...register("notes")}
                 />

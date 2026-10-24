@@ -117,13 +117,13 @@ export function CloseTradeModal({
             label="Exit Price"
             type="number"
             step="any"
-            placeholder="e.g. 105.50"
+            placeholder="0.00"
             error={errors.exitPrice?.message}
             {...register("exitPrice")}
           />
 
           <Input
-            label="Additional / Closing Fees ($)"
+            label="Closing Fees ($)"
             type="number"
             step="any"
             placeholder="0.00"
@@ -133,11 +133,11 @@ export function CloseTradeModal({
 
           <div>
             <label className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5">
-              Exit Notes / Takeaway
+              Exit Notes
             </label>
             <textarea
               rows={2}
-              placeholder="Why did you exit? Did you follow your trade plan?"
+              placeholder="Exit reason or notes..."
               className="w-full rounded-xl border border-input bg-card px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
               {...register("notes")}
             />
