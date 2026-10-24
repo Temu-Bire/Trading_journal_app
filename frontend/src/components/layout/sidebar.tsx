@@ -75,9 +75,9 @@ export function Sidebar() {
               <Link
                 key={item.name}
                 href={item.href}
+                prefetch={true}
                 className={cn(
-                  "relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group animate-fade-up",
-                  `delay-${Math.min(idx * 50 + 50, 300)}`,
+                  "relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group",
                   isActive
                     ? "bg-primary-muted text-primary font-semibold shadow-inner-glow"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -112,6 +112,7 @@ export function Sidebar() {
       <div className="pt-4 border-t border-border space-y-1 animate-fade-up delay-500">
         <Link
           href="/help"
+          prefetch={true}
           className={cn(
             "relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group",
             pathname === "/help"

@@ -96,11 +96,7 @@ export default function DashboardLayout({
           showNewTradeButton={!hideNewTrade}
           onNewTradeClick={hideNewTrade ? undefined : () => setCreateTradeModalOpen(true)}
         />
-        {/* Page entrance animation — keyed on pathname to re-trigger on route change */}
-        <main
-          key={pathname}
-          className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto animate-fade-up"
-        >
+        <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto">
           {children}
         </main>
       </div>

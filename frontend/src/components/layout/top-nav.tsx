@@ -213,10 +213,10 @@ export function TopNav({ onNewTradeClick, showNewTradeButton = true }: TopNavPro
                     <Link
                       key={item.name}
                       href={item.href}
+                      prefetch={true}
                       onClick={() => setMobileMenuOpen(false)}
-                      style={{ animationDelay: `${idx * 40}ms` }}
                       className={cn(
-                        "relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 animate-fade-up group",
+                        "relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group",
                         isActive
                           ? "bg-primary-muted text-primary font-semibold"
                           : "text-muted-foreground hover:text-foreground hover:bg-muted"
