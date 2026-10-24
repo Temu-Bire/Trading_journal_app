@@ -348,20 +348,7 @@ export default function StrategiesPage() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Top Banner: Backend Integration Transparency */}
-      <div className="p-3.5 rounded-2xl bg-primary/5 border border-primary/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2.5 text-foreground">
-          <Info className="w-4 h-4 text-primary flex-shrink-0" />
-          <span>
-            <strong>Live Trade Sync:</strong> Strategy metrics & P&L are aggregated directly from your Express backend trades. Playbooks are saved to your trader workspace.
-          </span>
-        </div>
-        <Badge variant="outline" className="text-[10px] uppercase font-bold text-primary flex-shrink-0">
-          API v1 Live
-        </Badge>
-      </div>
-
+    <div className="space-y-6">
       {/* Header and Action Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -391,7 +378,7 @@ export default function StrategiesPage() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search strategy name, description, symbols, or tags..."
+            placeholder="Search strategies..."
             className="pl-9 h-10 rounded-xl text-xs"
           />
         </div>
@@ -798,9 +785,9 @@ export default function StrategiesPage() {
                       <p className="text-xs text-muted-foreground">
                         No trades have been tagged with this strategy yet.
                       </p>
-                      <Link href="/trades/new">
+                      <Link href="/trades">
                         <Button variant="outline" size="sm" className="text-xs">
-                          Log a Trade with This Strategy
+                          View Trades
                         </Button>
                       </Link>
                     </div>
@@ -871,15 +858,27 @@ export default function StrategiesPage() {
 
       {/* Create / Edit Strategy Modal */}
       {editModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-card text-foreground rounded-2xl border border-border p-6 max-w-xl w-full shadow-dropdown space-y-5 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-border">
-              <h3 className="text-base font-bold text-foreground">
-                {strategyToEdit ? "Edit Strategy Playbook" : "New Strategy Playbook"}
-              </h3>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 dark:bg-black/75 animate-fade-in overflow-y-auto"
+          onClick={() => setEditModalOpen(false)}
+        >
+          <div
+            className="bg-card text-foreground rounded-2xl border border-border p-6 max-w-xl w-full shadow-dropdown space-y-5 my-8 max-h-[85vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4 pb-4 border-b border-border">
+              <div>
+                <h3 className="text-lg font-bold text-foreground tracking-tight">
+                  {strategyToEdit ? "Edit Strategy" : "New Strategy"}
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Set up your trade entry, exit, and risk rules.
+                </p>
+              </div>
               <button
                 onClick={() => setEditModalOpen(false)}
-                className="p-1 rounded-lg hover:bg-muted text-muted-foreground"
+                className="text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-xl hover:bg-muted"
+                aria-label="Close dialog"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -889,42 +888,42 @@ export default function StrategiesPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
                   label="Strategy Name *"
-                  placeholder="e.g. Order Block & FVG Retest"
+                  placeholder="e.g. Trend Breakout"
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   required
                 />
                 <Select
-                  label="Target Market"
+                  label="Market"
                   value={formMarket}
                   onChange={(e) => setFormMarket(e.target.value)}
                   options={[
-                    { value: "forex", label: "Forex (FX)" },
+                    { value: "forex", label: "Forex" },
                     { value: "crypto", label: "Crypto" },
-                    { value: "stocks", label: "Stocks / Equities" },
+                    { value: "stocks", label: "Stocks" },
                     { value: "indices", label: "Indices" },
                     { value: "commodities", label: "Commodities" },
-                    { value: "all", label: "All Asset Classes" },
+                    { value: "all", label: "All Markets" },
                   ]}
                 />
               </div>
 
               <Input
-                label="Target Symbols / Instruments"
-                placeholder="e.g. EURUSD, GBPUSD, NVDA, BTCUSD (optional)"
+                label="Target Symbols"
+                placeholder="e.g. EURUSD, GBPUSD"
                 value={formSymbols}
                 onChange={(e) => setFormSymbols(e.target.value)}
               />
 
               <div>
                 <label className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5">
-                  Strategy Description
+                  Description
                 </label>
                 <textarea
                   rows={2}
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
-                  placeholder="Summarize the core premise, timeframe, and edge of this setup..."
+                  placeholder="Brief description of this strategy..."
                   className="w-full rounded-xl border border-input bg-card px-3.5 py-2 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
@@ -937,8 +936,8 @@ export default function StrategiesPage() {
                   rows={3}
                   value={formEntryRules}
                   onChange={(e) => setFormEntryRules(e.target.value)}
-                  placeholder="e.g.&#10;Liquidity swept on 1h chart&#10;15m market structure shift with displacement&#10;Limit entry at 50% FVG"
-                  className="w-full rounded-xl border border-input bg-card px-3.5 py-2 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring font-mono"
+                  placeholder="e.g. Break above 20 EMA&#10;RSI confirmation"
+                  className="w-full rounded-xl border border-input bg-card px-3.5 py-2 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
 
@@ -951,8 +950,8 @@ export default function StrategiesPage() {
                     rows={3}
                     value={formExitRules}
                     onChange={(e) => setFormExitRules(e.target.value)}
-                    placeholder="e.g.&#10;Target opposing liquidity pool&#10;50% off at 2R and trail stop"
-                    className="w-full rounded-xl border border-input bg-card px-3.5 py-2 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring font-mono"
+                    placeholder="e.g. Target 2R&#10;Move SL to breakeven at 1R"
+                    className="w-full rounded-xl border border-input bg-card px-3.5 py-2 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
                 </div>
 
@@ -964,20 +963,20 @@ export default function StrategiesPage() {
                     rows={3}
                     value={formRiskRules}
                     onChange={(e) => setFormRiskRules(e.target.value)}
-                    placeholder="e.g.&#10;Max 1.0% account risk&#10;Hard stop placed below swing low"
-                    className="w-full rounded-xl border border-input bg-card px-3.5 py-2 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring font-mono"
+                    placeholder="e.g. Max 1% risk per trade"
+                    className="w-full rounded-xl border border-input bg-card px-3.5 py-2 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
                 </div>
               </div>
 
               <Input
-                label="Tags (comma-separated)"
-                placeholder="e.g. SMC, Breakout, High-Probability"
+                label="Tags"
+                placeholder="e.g. Scalping, Breakout"
                 value={formTags}
                 onChange={(e) => setFormTags(e.target.value)}
               />
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
                 <Button
                   type="button"
                   variant="outline"
@@ -992,7 +991,7 @@ export default function StrategiesPage() {
                   size="sm"
                   loading={formSubmitting}
                 >
-                  {strategyToEdit ? "Save Changes" : "Create Strategy"}
+                  {strategyToEdit ? "Save Changes" : "Save Strategy"}
                 </Button>
               </div>
             </form>
@@ -1002,8 +1001,17 @@ export default function StrategiesPage() {
 
       {/* Delete Strategy Confirmation Modal */}
       {deleteConfirmOpen && strategyToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-card text-foreground rounded-2xl border border-border p-6 max-w-sm w-full shadow-dropdown space-y-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/75 animate-fade-in"
+          onClick={() => {
+            setDeleteConfirmOpen(false);
+            setStrategyToDelete(null);
+          }}
+        >
+          <div
+            className="bg-card text-foreground rounded-2xl border border-border p-6 max-w-sm w-full shadow-dropdown space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="text-base font-bold text-foreground">
               Delete Strategy &ldquo;{strategyToDelete.name}&rdquo;?
             </h3>

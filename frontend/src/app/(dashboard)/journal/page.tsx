@@ -328,20 +328,7 @@ export default function JournalPage() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Backend Integration Transparency Banner */}
-      <div className="p-3.5 rounded-2xl bg-primary/5 border border-primary/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2.5 text-foreground">
-          <Info className="w-4 h-4 text-primary flex-shrink-0" />
-          <span>
-            <strong>Dual Persistence:</strong> Notes linked to trades sync directly into your Express MongoDB trade model. Structured psychology, discipline tags, and session reflections are saved to your workspace.
-          </span>
-        </div>
-        <Badge variant="outline" className="text-[10px] uppercase font-bold text-primary flex-shrink-0">
-          Sync Active
-        </Badge>
-      </div>
-
+    <div className="space-y-6">
       {/* Header and New Entry CTA */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -426,7 +413,7 @@ export default function JournalPage() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search notes, reflections, lessons, or symbols..."
+            placeholder="Search journal..."
             className="pl-9 h-10 rounded-xl text-xs"
           />
         </div>
@@ -653,15 +640,27 @@ export default function JournalPage() {
 
       {/* Create / Edit Journal Entry Modal */}
       {entryModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-card text-foreground rounded-2xl border border-border p-6 max-w-xl w-full shadow-dropdown space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-border">
-              <h3 className="text-base font-bold text-foreground">
-                {selectedEntryToEdit ? "Edit Journal Entry" : "New Journal Entry"}
-              </h3>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 dark:bg-black/75 animate-fade-in overflow-y-auto"
+          onClick={() => setEntryModalOpen(false)}
+        >
+          <div
+            className="bg-card text-foreground rounded-2xl border border-border p-6 max-w-xl w-full shadow-dropdown space-y-5 my-8 max-h-[85vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4 pb-4 border-b border-border">
+              <div>
+                <h3 className="text-lg font-bold text-foreground tracking-tight">
+                  {selectedEntryToEdit ? "Edit Journal Entry" : "New Journal Entry"}
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Record your session notes, mindset, and key takeaways.
+                </p>
+              </div>
               <button
                 onClick={() => setEntryModalOpen(false)}
-                className="p-1 rounded-lg hover:bg-muted text-muted-foreground"
+                className="text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-xl hover:bg-muted"
+                aria-label="Close dialog"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -670,7 +669,7 @@ export default function JournalPage() {
             <form onSubmit={handleSaveEntry} className="space-y-4">
               <Input
                 label="Entry Title *"
-                placeholder="e.g. Clean patience on London Open FVG or Daily Pre-Market Plan"
+                placeholder="e.g. London Session Review"
                 value={formTitle}
                 onChange={(e) => setFormTitle(e.target.value)}
                 required
@@ -679,23 +678,17 @@ export default function JournalPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5">
-                    Link to Recorded Trade (optional)
+                    Linked Trade (Optional)
                   </label>
                   <select
                     value={formTradeId}
                     onChange={(e) => setFormTradeId(e.target.value)}
                     className="w-full h-10 rounded-xl border border-input bg-card px-3 text-xs text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    <option value="none">None (Session / Standalone Log)</option>
+                    <option value="none">None (General Session)</option>
                     {trades.map((t) => (
                       <option key={t._id} value={t._id}>
-                        {t.symbol} ({t.direction.toUpperCase()}) — {formatDate(t.entryAt)} (
-                        {t.status === "open"
-                          ? "Open"
-                          : t.pnlNet !== undefined
-                          ? formatCurrency(t.pnlNet)
-                          : "Closed"}
-                        )
+                        {t.symbol} ({t.direction.toUpperCase()}) — {formatDate(t.entryAt)}
                       </option>
                     ))}
                   </select>
@@ -713,8 +706,8 @@ export default function JournalPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Input
-                    label="Strategy Playbook"
-                    placeholder="e.g. Order Block & FVG Retest"
+                    label="Strategy (Optional)"
+                    placeholder="e.g. Trend Breakout"
                     list="journal-strategies-list"
                     value={formStrategy}
                     onChange={(e) => setFormStrategy(e.target.value)}
@@ -749,7 +742,7 @@ export default function JournalPage() {
               {/* Trading Plan Adherence Toggle */}
               <div>
                 <label className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5">
-                  Did you strictly follow your trading plan?
+                  Did you follow your trading plan?
                 </label>
                 <div className="grid grid-cols-2 gap-3 h-10 p-1 bg-muted rounded-xl">
                   <button
@@ -776,7 +769,7 @@ export default function JournalPage() {
                     )}
                   >
                     <XCircle className="w-3.5 h-3.5" />
-                    No, Deviated / Broke Rule
+                    No, Deviated
                   </button>
                 </div>
               </div>
@@ -784,13 +777,13 @@ export default function JournalPage() {
               {/* Notes & Reflections */}
               <div>
                 <label className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5">
-                  Journal Reflections & Market Context *
+                  Session Notes & Reflections *
                 </label>
                 <textarea
                   rows={4}
                   value={formNotes}
                   onChange={(e) => setFormNotes(e.target.value)}
-                  placeholder="Record your market context, setup confirmation, execution thoughts, and emotional triggers..."
+                  placeholder="What happened during this trade or session? How did you execute?"
                   required
                   className="w-full rounded-xl border border-input bg-card px-3.5 py-2.5 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
                 />
@@ -799,26 +792,26 @@ export default function JournalPage() {
               {/* Lessons Learned */}
               <div>
                 <label className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5">
-                  Lessons Learned & Mistakes to Avoid
+                  Lessons Learned (Optional)
                 </label>
                 <textarea
                   rows={2}
                   value={formLessons}
                   onChange={(e) => setFormLessons(e.target.value)}
-                  placeholder="What is the key takeaway? What will you do differently next session?"
+                  placeholder="Key takeaway or what to do next time..."
                   className="w-full rounded-xl border border-input bg-card px-3.5 py-2.5 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
                 />
               </div>
 
               {/* Tags */}
               <Input
-                label="Tags (comma-separated)"
-                placeholder="e.g. SMC, FOMO, LondonOpen, Disciplined"
+                label="Tags (Optional)"
+                placeholder="e.g. disciplined, patient, pullback"
                 value={formTags}
                 onChange={(e) => setFormTags(e.target.value)}
               />
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
                 <Button
                   type="button"
                   variant="outline"
@@ -833,7 +826,7 @@ export default function JournalPage() {
                   size="sm"
                   loading={formSubmitting}
                 >
-                  {selectedEntryToEdit ? "Save Changes" : "Save Journal Entry"}
+                  {selectedEntryToEdit ? "Save Changes" : "Save Entry"}
                 </Button>
               </div>
             </form>
@@ -843,8 +836,14 @@ export default function JournalPage() {
 
       {/* Full View Entry Modal */}
       {viewEntryModalOpen && activeViewEntry && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-card text-foreground rounded-2xl border border-border p-6 max-w-xl w-full shadow-dropdown space-y-5 max-h-[90vh] overflow-y-auto">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 dark:bg-black/75 animate-fade-in overflow-y-auto"
+          onClick={() => setViewEntryModalOpen(false)}
+        >
+          <div
+            className="bg-card text-foreground rounded-2xl border border-border p-6 max-w-xl w-full shadow-dropdown space-y-5 my-8 max-h-[85vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-start justify-between pb-3 border-b border-border">
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -947,8 +946,17 @@ export default function JournalPage() {
 
       {/* Delete Entry Confirmation Modal */}
       {deleteConfirmOpen && entryToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-card text-foreground rounded-2xl border border-border p-6 max-w-sm w-full shadow-dropdown space-y-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/75 animate-fade-in"
+          onClick={() => {
+            setDeleteConfirmOpen(false);
+            setEntryToDelete(null);
+          }}
+        >
+          <div
+            className="bg-card text-foreground rounded-2xl border border-border p-6 max-w-sm w-full shadow-dropdown space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="text-base font-bold text-foreground">
               Delete Journal Entry?
             </h3>
