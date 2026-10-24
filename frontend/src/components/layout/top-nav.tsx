@@ -187,7 +187,7 @@ export function TopNav({ onNewTradeClick, showNewTradeButton = true }: TopNavPro
         <div className="fixed inset-0 z-50 lg:hidden">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-[2px] animate-fade-in"
+            className="fixed inset-0 bg-black/60 dark:bg-black/75 animate-fade-in"
             onClick={() => setMobileMenuOpen(false)}
           />
           {/* Drawer */}

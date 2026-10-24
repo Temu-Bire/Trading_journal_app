@@ -58,7 +58,7 @@ export function Dialog({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
             onClick={onClose}
-            className="fixed inset-0 bg-slate-900/40 dark:bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/60 dark:bg-black/75"
           />
 
           {/* Modal Card */}

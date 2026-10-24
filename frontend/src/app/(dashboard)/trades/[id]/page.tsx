@@ -308,8 +308,14 @@ export default function TradeDetailsPage({
 
       {/* Delete Confirmation */}
       {deleteConfirmOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-card text-foreground rounded-2xl border border-border p-6 max-w-sm w-full shadow-dropdown space-y-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/75"
+          onClick={() => setDeleteConfirmOpen(false)}
+        >
+          <div
+            className="bg-card text-foreground rounded-2xl border border-border p-6 max-w-sm w-full shadow-dropdown space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="text-base font-bold text-foreground">
               Delete Trade {trade.symbol}?
             </h3>
