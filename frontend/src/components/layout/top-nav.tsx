@@ -25,10 +25,10 @@ import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useApiHealth } from "@/lib/useApiHealth";
 
 interface TopNavProps {
   onNewTradeClick?: () => void;
+  showNewTradeButton?: boolean;
 }
 
 const navItems = [
@@ -41,14 +41,21 @@ const navItems = [
   { name: "Help & Support", href: "/help", icon: HelpCircle },
 ];
 
-export function TopNav({ onNewTradeClick }: TopNavProps) {
+export function TopNav({ onNewTradeClick, showNewTradeButton = true }: TopNavProps) {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dateFilterOpen, setDateFilterOpen] = useState(false);
   const [selectedRange, setSelectedRange] = useState("Last 30 Days");
-  const health = useApiHealth();
+
+  const isExcludedPage =
+    pathname.startsWith("/trades") ||
+    pathname.startsWith("/analytics") ||
+    pathname.startsWith("/strategies") ||
+    pathname.startsWith("/journal");
+
+  const shouldShowNewTrade = showNewTradeButton && !isExcludedPage;
 
   const getPageTitle = () => {
     if (pathname.startsWith("/overview")) return "Overview";
@@ -81,42 +88,6 @@ export function TopNav({ onNewTradeClick }: TopNavProps) {
               <h1 className="text-xl font-bold tracking-tight text-foreground animate-fade-in">
                 {getPageTitle()}
               </h1>
-              {/* Real-Time Live Backend Health Indicator */}
-              <div
-                title={
-                  health.loading
-                    ? "Checking API connection..."
-                    : health.online
-                    ? `Connected to Backend (Latency: ${health.latencyMs ?? "<40"}ms | DB: ${health.databaseConnected ? "Healthy" : "Degraded"})`
-                    : "Backend server offline or unreachable on port 5000"
-                }
-                className={cn(
-                  "hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border transition-all duration-200",
-                  health.loading
-                    ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800/60"
-                    : health.online
-                    ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/60"
-                    : "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800/60"
-                )}
-              >
-                <span
-                  className={cn(
-                    "w-1.5 h-1.5 rounded-full",
-                    health.loading
-                      ? "bg-amber-500 animate-pulse"
-                      : health.online
-                      ? "bg-emerald-500 animate-pulse"
-                      : "bg-rose-500"
-                  )}
-                />
-                <span>
-                  {health.loading
-                    ? "Connecting..."
-                    : health.online
-                    ? `API Online ${health.latencyMs ? `(${health.latencyMs}ms)` : ""}`
-                    : "API Offline"}
-                </span>
-              </div>
             </div>
           </div>
 
@@ -177,34 +148,36 @@ export function TopNav({ onNewTradeClick }: TopNavProps) {
             </button>
 
             {/* Prominent "+ New Trade" Button with pulse ring */}
-            <div className="relative">
-              {/* Animated pulse ring */}
-              <span className="absolute inset-0 rounded-xl border-2 border-primary/40 animate-ping opacity-30 pointer-events-none" />
-              {onNewTradeClick ? (
-                <Button
-                  variant="primary"
-                  size="md"
-                  onClick={onNewTradeClick}
-                  icon={<Plus className="w-4 h-4" />}
-                  className="relative font-semibold shadow-glow-primary hover:shadow-glow bg-gradient-to-r from-primary to-blue-500 hover:from-primary-hover hover:to-blue-600 transition-all duration-300"
-                >
-                  <span className="hidden sm:inline">New Trade</span>
-                  <span className="sm:hidden">Add</span>
-                </Button>
-              ) : (
-                <Link href="/trades/new">
+            {shouldShowNewTrade && (
+              <div className="relative">
+                {/* Animated pulse ring */}
+                <span className="absolute inset-0 rounded-xl border-2 border-primary/40 animate-ping opacity-30 pointer-events-none" />
+                {onNewTradeClick ? (
                   <Button
                     variant="primary"
                     size="md"
+                    onClick={onNewTradeClick}
                     icon={<Plus className="w-4 h-4" />}
                     className="relative font-semibold shadow-glow-primary hover:shadow-glow bg-gradient-to-r from-primary to-blue-500 hover:from-primary-hover hover:to-blue-600 transition-all duration-300"
                   >
                     <span className="hidden sm:inline">New Trade</span>
                     <span className="sm:hidden">Add</span>
                   </Button>
-                </Link>
-              )}
-            </div>
+                ) : (
+                  <Link href="/trades/new">
+                    <Button
+                      variant="primary"
+                      size="md"
+                      icon={<Plus className="w-4 h-4" />}
+                      className="relative font-semibold shadow-glow-primary hover:shadow-glow bg-gradient-to-r from-primary to-blue-500 hover:from-primary-hover hover:to-blue-600 transition-all duration-300"
+                    >
+                      <span className="hidden sm:inline">New Trade</span>
+                      <span className="sm:hidden">Add</span>
+                    </Button>
+                  </Link>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -214,7 +187,7 @@ export function TopNav({ onNewTradeClick }: TopNavProps) {
         <div className="fixed inset-0 z-50 lg:hidden">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm animate-fade-in"
+            className="fixed inset-0 bg-black/40 backdrop-blur-[2px] animate-fade-in"
             onClick={() => setMobileMenuOpen(false)}
           />
           {/* Drawer */}

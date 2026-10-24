@@ -79,6 +79,12 @@ export default function DashboardLayout({
     return null;
   }
 
+  const hideNewTrade =
+    pathname.startsWith("/trades") ||
+    pathname.startsWith("/analytics") ||
+    pathname.startsWith("/strategies") ||
+    pathname.startsWith("/journal");
+
   return (
     <div className="flex min-h-screen bg-background">
       {/* Sidebar */}
@@ -86,7 +92,10 @@ export default function DashboardLayout({
 
       {/* Main content view */}
       <div className="flex-1 flex flex-col min-w-0">
-        <TopNav onNewTradeClick={() => setCreateTradeModalOpen(true)} />
+        <TopNav
+          showNewTradeButton={!hideNewTrade}
+          onNewTradeClick={hideNewTrade ? undefined : () => setCreateTradeModalOpen(true)}
+        />
         {/* Page entrance animation — keyed on pathname to re-trigger on route change */}
         <main
           key={pathname}
@@ -97,13 +106,15 @@ export default function DashboardLayout({
       </div>
 
       {/* Global Quick Trade Creator Dialog */}
-      <CreateTradeModal
-        open={createTradeModalOpen}
-        onClose={() => setCreateTradeModalOpen(false)}
-        onTradeCreated={() => {
-          window.dispatchEvent(new CustomEvent("tj:trade-created"));
-        }}
-      />
+      {!hideNewTrade && (
+        <CreateTradeModal
+          open={createTradeModalOpen}
+          onClose={() => setCreateTradeModalOpen(false)}
+          onTradeCreated={() => {
+            window.dispatchEvent(new CustomEvent("tj:trade-created"));
+          }}
+        />
+      )}
     </div>
   );
 }
