@@ -8,7 +8,6 @@ import {
   Target,
   ArrowUpRight,
   TrendingUp,
-  TrendingDown,
   Clock,
   PieChart as PieIcon,
   Plus,

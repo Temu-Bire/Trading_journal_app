@@ -19,7 +19,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-xs font-semibold text-foreground uppercase tracking-wider"
+            className="block text-xs font-medium text-foreground"
           >
             {label}
           </label>

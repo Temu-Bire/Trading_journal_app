@@ -91,7 +91,7 @@ function RegisterForm() {
           <Input
             label="Full Name"
             type="text"
-            placeholder="Alex Morgan"
+            placeholder="Your name"
             icon={<UserIcon className="w-4 h-4" />}
             error={errors.name?.message}
             {...register("name")}
@@ -102,7 +102,7 @@ function RegisterForm() {
           <Input
             label="Email Address"
             type="email"
-            placeholder="trader@example.com"
+            placeholder="you@example.com"
             icon={<Mail className="w-4 h-4" />}
             error={errors.email?.message}
             {...register("email")}
@@ -113,7 +113,7 @@ function RegisterForm() {
           <Input
             label="Password"
             type={showPassword ? "text" : "password"}
-            placeholder="Min 8 chars, 1 uppercase, 1 symbol"
+            placeholder="Create a password"
             icon={<Lock className="w-4 h-4" />}
             error={errors.password?.message}
             {...register("password")}

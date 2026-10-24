@@ -72,7 +72,7 @@ function LoginForm() {
           <Input
             label="Email Address"
             type="email"
-            placeholder="trader@example.com"
+            placeholder="you@example.com"
             icon={<Mail className="w-4 h-4" />}
             error={errors.email?.message}
             {...register("email")}
@@ -84,7 +84,7 @@ function LoginForm() {
           <Input
             label="Password"
             type={showPassword ? "text" : "password"}
-            placeholder="••••••••"
+            placeholder="Enter your password"
             icon={<Lock className="w-4 h-4" />}
             error={errors.password?.message}
             {...register("password")}

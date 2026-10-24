@@ -78,7 +78,7 @@ export default function ForgotPasswordPage() {
         <Input
           label="Email Address"
           type="email"
-          placeholder="trader@example.com"
+          placeholder="you@example.com"
           icon={<Mail className="w-4 h-4" />}
           error={errors.email?.message}
           {...register("email")}
