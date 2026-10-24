@@ -62,9 +62,13 @@ export default function JournalPage() {
   const { success, error } = useToast();
 
   const [trades, setTrades] = useState<ITrade[]>([]);
-  const [strategies, setStrategies] = useState<IStrategy[]>([]);
-  const [journalEntries, setJournalEntries] = useState<IJournalEntry[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [strategies, setStrategies] = useState<IStrategy[]>(() => {
+    return typeof window !== "undefined" ? getStrategies() : [];
+  });
+  const [journalEntries, setJournalEntries] = useState<IJournalEntry[]>(() => {
+    return typeof window !== "undefined" ? getJournalEntries() : [];
+  });
+  const [loading, setLoading] = useState(false);
 
   // Filters
   const [search, setSearch] = useState("");
@@ -94,7 +98,6 @@ export default function JournalPage() {
 
   // Load Data
   const loadData = useCallback(async () => {
-    setLoading(true);
     try {
       const res = await apiClient.get<ITrade[]>("/trades", { limit: 200 });
       if (res.success && res.data) {
@@ -340,15 +343,16 @@ export default function JournalPage() {
           </p>
         </div>
 
-        <Button
-          variant="primary"
-          size="md"
-          icon={<Plus className="w-4 h-4" />}
-          onClick={handleOpenCreate}
-          className="shadow-xs self-start sm:self-auto"
-        >
-          New Journal Entry
-        </Button>
+        <Link href="/journal/new">
+          <Button
+            variant="primary"
+            size="md"
+            icon={<Plus className="w-4 h-4" />}
+            className="shadow-xs self-start sm:self-auto"
+          >
+            New Journal Entry
+          </Button>
+        </Link>
       </div>
 
       {/* Process & Discipline Review Cards */}
@@ -641,7 +645,7 @@ export default function JournalPage() {
       {/* Create / Edit Journal Entry Modal */}
       {entryModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 dark:bg-black/75 animate-fade-in overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-start justify-center p-4 sm:p-6 pt-6 sm:pt-12 pb-10 bg-black/60 dark:bg-black/75 animate-fade-in overflow-y-auto"
           onClick={() => setEntryModalOpen(false)}
         >
           <div
@@ -837,7 +841,7 @@ export default function JournalPage() {
       {/* Full View Entry Modal */}
       {viewEntryModalOpen && activeViewEntry && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 dark:bg-black/75 animate-fade-in overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-start justify-center p-4 sm:p-6 pt-6 sm:pt-12 pb-10 bg-black/60 dark:bg-black/75 animate-fade-in overflow-y-auto"
           onClick={() => setViewEntryModalOpen(false)}
         >
           <div

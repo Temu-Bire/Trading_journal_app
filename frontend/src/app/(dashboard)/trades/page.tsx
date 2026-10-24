@@ -118,14 +118,15 @@ export default function TradesPage() {
               Review, filter, and manage all your historical and live positions
             </p>
           </div>
-          <Button
-            variant="primary"
-            size="md"
-            icon={<Plus className="w-4 h-4" />}
-            onClick={() => setCreateModalOpen(true)}
-          >
-            New Trade
-          </Button>
+          <Link href="/trades/new">
+            <Button
+              variant="primary"
+              size="md"
+              icon={<Plus className="w-4 h-4" />}
+            >
+              New Trade
+            </Button>
+          </Link>
         </div>
 
         {/* Filter Controls Card */}
