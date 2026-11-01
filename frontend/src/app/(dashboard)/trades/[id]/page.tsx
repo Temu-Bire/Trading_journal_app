@@ -189,7 +189,7 @@ export default function TradeDetailsPage({
             ) : (
               <span
                 className={cn(
-                  "text-3xl font-bold tracking-tight",
+                  "text-2xl font-bold tracking-tight",
                   isWin ? "text-profit" : isLoss ? "text-loss" : "text-muted-foreground"
                 )}
               >

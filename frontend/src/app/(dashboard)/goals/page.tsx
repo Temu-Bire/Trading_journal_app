@@ -166,7 +166,7 @@ export default function GoalsPage() {
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
             Total Goals
           </span>
-          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+          <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
             {stats.total}
           </p>
         </Card>
@@ -175,7 +175,7 @@ export default function GoalsPage() {
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
             Achieved
           </span>
-          <p className="text-2xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">
+          <p className="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
             {stats.achieved}
           </p>
         </Card>
@@ -184,7 +184,7 @@ export default function GoalsPage() {
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
             In Progress
           </span>
-          <p className="text-2xl sm:text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-1">
+          <p className="text-xl sm:text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">
             {stats.inProgress}
           </p>
         </Card>

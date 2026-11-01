@@ -7,6 +7,7 @@ import { TrendingUp, TrendingDown } from "lucide-react";
 export interface MetricCardProps {
   title: string;
   value: string | number;
+  unit?: string;
   change?: {
     value: string;
     isPositive?: boolean;
@@ -22,6 +23,7 @@ export interface MetricCardProps {
 export function MetricCard({
   title,
   value,
+  unit,
   change,
   icon,
   iconBgColor = "bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400",
@@ -127,15 +129,35 @@ export function MetricCard({
           )}
         </div>
 
-        {/* Big Metric Value */}
-        <div
-          className={cn(
-            "text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2.5",
-            mounted && "animate-count-up"
-          )}
-        >
-          {value}
-        </div>
+        {/* Metric Value & Unit */}
+        {(() => {
+          let displayValue = value;
+          let displayUnit = unit;
+          if (!displayUnit && typeof value === "string") {
+            const match = value.trim().match(/^([\$\€\£\¥\+‐\-]?[0-9,.]+%?)\s+([A-Za-z]+)$/);
+            if (match) {
+              displayValue = match[1];
+              displayUnit = match[2];
+            }
+          }
+          return (
+            <div className="flex items-baseline gap-1.5 mb-2">
+              <span
+                className={cn(
+                  "text-2xl sm:text-[26px] font-bold tracking-tight text-slate-900 dark:text-white leading-none",
+                  mounted && "animate-count-up"
+                )}
+              >
+                {displayValue}
+              </span>
+              {displayUnit && (
+                <span className="text-xs sm:text-sm font-semibold text-slate-400 dark:text-slate-500 tracking-normal">
+                  {displayUnit}
+                </span>
+              )}
+            </div>
+          );
+        })()}
 
         {/* Change Indicator */}
         {change && (

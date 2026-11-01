@@ -244,7 +244,7 @@ export default function OverviewPage() {
 
             {!editingCapital ? (
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                <span className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
                   {formatDisplayAmount(realCurrentBalance)}
                 </span>
                 <span className="text-xs text-slate-400">
@@ -353,7 +353,8 @@ export default function OverviewPage() {
 
         <MetricCard
           title="Active Open Risk"
-          value={`${openTradesCount} Position${openTradesCount !== 1 ? "s" : ""}`}
+          value={openTradesCount}
+          unit={openTradesCount === 1 ? "Position" : "Positions"}
           trendColor="blue"
           icon={<ShieldCheck className="w-4 h-4" />}
           change={{

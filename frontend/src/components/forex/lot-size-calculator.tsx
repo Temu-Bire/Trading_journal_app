@@ -234,11 +234,11 @@ export function LotSizeCalculator({
               </button>
             </div>
 
-            <div className="flex items-baseline gap-2">
-              <span className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight leading-none">
                 {calculatedLotSize.toFixed(2)}
               </span>
-              <span className="text-sm font-bold text-slate-500 uppercase">Lots</span>
+              <span className="text-xs font-semibold text-slate-400 uppercase">Lots</span>
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-2 text-xs">

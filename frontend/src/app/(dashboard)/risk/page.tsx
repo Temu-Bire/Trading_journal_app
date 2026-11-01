@@ -99,7 +99,7 @@ export default function RiskManagementPage() {
             Max Risk Per Trade
           </span>
           <div className="flex items-baseline justify-between mt-1">
-            <span className="text-2xl font-extrabold text-slate-900 dark:text-white">
+            <span className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
               {profile.maxRiskPerTradePercent}%
             </span>
             <span className="text-xs font-bold text-rose-600">
@@ -116,9 +116,14 @@ export default function RiskManagementPage() {
             Max Daily Trades
           </span>
           <div className="flex items-baseline justify-between mt-1">
-            <span className="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400">
-              {profile.maxTradesPerDay} Trades/Day
-            </span>
+            <div className="flex items-baseline gap-1">
+              <span className="text-xl sm:text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                {profile.maxTradesPerDay}
+              </span>
+              <span className="text-xs font-semibold text-slate-400">
+                Trades/Day
+              </span>
+            </div>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600">
               Anti-Overtrade
             </span>
@@ -133,7 +138,7 @@ export default function RiskManagementPage() {
             Max Daily Loss Lock
           </span>
           <div className="flex items-baseline justify-between mt-1">
-            <span className="text-2xl font-extrabold text-rose-600">
+            <span className="text-xl sm:text-2xl font-bold text-rose-600">
               -${profile.maxDailyLossAmount}
             </span>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-600">
@@ -150,9 +155,14 @@ export default function RiskManagementPage() {
             Max Lot Size Limit
           </span>
           <div className="flex items-baseline justify-between mt-1">
-            <span className="text-2xl font-extrabold text-slate-900 dark:text-white">
-              {profile.maxLotSize} Lots
-            </span>
+            <div className="flex items-baseline gap-1">
+              <span className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                {profile.maxLotSize}
+              </span>
+              <span className="text-xs font-semibold text-slate-400">
+                Lots
+              </span>
+            </div>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-600">
               Safe Leverage
             </span>

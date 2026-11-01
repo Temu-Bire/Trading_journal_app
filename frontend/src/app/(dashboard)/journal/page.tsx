@@ -423,7 +423,7 @@ export default function JournalPage() {
             <span className="text-[11px] font-bold uppercase tracking-wider">Total Entries</span>
             <BookOpen className="w-4 h-4 text-indigo-500" />
           </div>
-          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+          <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
             {reviewStats.total}
           </p>
           <span className="text-[10px] text-slate-400 font-medium">
@@ -436,7 +436,7 @@ export default function JournalPage() {
             <span className="text-[11px] font-bold uppercase tracking-wider">Plan Discipline</span>
             <ShieldCheck className="w-4 h-4 text-emerald-500" />
           </div>
-          <p className="text-2xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">
+          <p className="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
             {reviewStats.disciplineRate}%
           </p>
           <span className="text-[10px] text-slate-400 font-medium">
@@ -449,7 +449,7 @@ export default function JournalPage() {
             <span className="text-[11px] font-bold uppercase tracking-wider">Dominant State</span>
             <Sparkles className="w-4 h-4 text-amber-500" />
           </div>
-          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1 truncate">
+          <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1 truncate">
             {reviewStats.dominantEmotion}
           </p>
           <span className="text-[10px] text-slate-400 font-medium">
@@ -462,7 +462,7 @@ export default function JournalPage() {
             <span className="text-[11px] font-bold uppercase tracking-wider">Playbooks Logged</span>
             <Target className="w-4 h-4 text-purple-500" />
           </div>
-          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+          <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
             {new Set(journalEntries.map((e) => e.strategy).filter(Boolean)).size}
           </p>
           <span className="text-[10px] text-slate-400 font-medium">
