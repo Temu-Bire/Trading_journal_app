@@ -488,7 +488,7 @@ export default function StrategiesPage() {
                     key={strat.id}
                     onClick={() => setSelectedStrategyId(strat.id)}
                     className={cn(
-                      "p-4 rounded-2xl border transition-all cursor-pointer text-left relative group",
+                      "p-5 rounded-3xl border border-slate-300 dark:border-white/10 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all cursor-pointer text-left relative group",
                       isSelected
                         ? "bg-card border-primary ring-2 ring-primary/20 shadow-sm"
                         : "bg-card/70 border-border hover:border-border/80 hover:bg-card"

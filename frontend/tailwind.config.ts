@@ -9,6 +9,17 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: [
+          "var(--font-sans)",
+          "'Plus Jakarta Sans'",
+          "Inter",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "sans-serif",
+        ],
+        heading: ["'Plus Jakarta Sans'", "sans-serif"],
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
@@ -50,20 +61,20 @@ const config: Config = {
         "3xl": "1.5rem",
       },
       boxShadow: {
-        card: "0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04)",
+        card: "0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04)",
         "card-hover":
-          "0 8px 24px -4px rgba(0, 0, 0, 0.1), 0 4px 8px -2px rgba(0, 0, 0, 0.06)",
+          "0 12px 32px -4px rgba(15, 23, 42, 0.1), 0 4px 12px -2px rgba(15, 23, 42, 0.06)",
         dropdown:
           "0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04)",
         "dropdown-dark":
           "0 10px 40px -8px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3)",
-        glow: "0 0 20px rgba(59, 130, 246, 0.25)",
-        "glow-primary": "0 0 24px rgba(59, 130, 246, 0.35)",
+        glow: "0 0 20px rgba(79, 70, 229, 0.25)",
+        "glow-primary": "0 0 24px rgba(79, 70, 229, 0.35)",
         "glow-emerald": "0 0 20px rgba(16, 185, 129, 0.3)",
         "glow-amber": "0 0 20px rgba(245, 158, 11, 0.3)",
         "glow-rose": "0 0 20px rgba(244, 63, 94, 0.3)",
         "inner-glow":
-          "inset 0 0 20px rgba(59, 130, 246, 0.08)",
+          "inset 0 0 20px rgba(79, 70, 229, 0.08)",
         lift: "0 16px 40px -8px rgba(0, 0, 0, 0.12)",
       },
       backgroundImage: {
@@ -149,8 +160,8 @@ const config: Config = {
           "66%": { transform: "translate(20px, -15px) scale(0.92)" },
         },
         "pulse-glow": {
-          "0%, 100%": { boxShadow: "0 0 0 0 rgba(59, 130, 246, 0.4)" },
-          "50%": { boxShadow: "0 0 0 8px rgba(59, 130, 246, 0)" },
+          "0%, 100%": { boxShadow: "0 0 0 0 rgba(79, 70, 229, 0.4)" },
+          "50%": { boxShadow: "0 0 0 8px rgba(79, 70, 229, 0)" },
         },
         "pulse-glow-emerald": {
           "0%, 100%": { boxShadow: "0 0 0 0 rgba(16, 185, 129, 0.4)" },

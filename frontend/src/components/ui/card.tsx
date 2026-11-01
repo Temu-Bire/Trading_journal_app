@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   padding?: "none" | "sm" | "md" | "lg";
-  /** When true, adds a hover lift + glow ring effect */
   interactive?: boolean;
 }
 
@@ -24,9 +23,9 @@ export function Card({
   return (
     <div
       className={cn(
-        "bg-card text-card-foreground rounded-2xl border border-border shadow-card transition-all duration-300",
+        "bg-white dark:bg-[#0f1422] text-card-foreground rounded-3xl border border-slate-300 dark:border-white/10 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] transition-all duration-300",
         interactive &&
-          "hover:shadow-card-hover hover:-translate-y-0.5 hover:border-primary/20 cursor-pointer",
+          "hover:shadow-[0_12px_32px_-4px_rgba(15,23,42,0.1),0_4px_12px_-2px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:border-indigo-500/40 cursor-pointer",
         paddings[padding],
         className
       )}
@@ -57,7 +56,7 @@ export function CardTitle({
   return (
     <h3
       className={cn(
-        "text-base font-semibold leading-none tracking-tight text-foreground",
+        "text-lg font-extrabold tracking-tight text-slate-900 dark:text-white leading-none",
         className
       )}
       {...props}
@@ -73,8 +72,38 @@ export function CardDescription({
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
-    <p className={cn("text-xs text-muted-foreground", className)} {...props}>
+    <p
+      className={cn("text-xs text-slate-500 dark:text-slate-400 font-medium", className)}
+      {...props}
+    >
       {children}
     </p>
+  );
+}
+
+export function CardContent({
+  className,
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div className={cn("pt-0", className)} {...props}>
+      {children}
+    </div>
+  );
+}
+
+export function CardFooter({
+  className,
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn("flex items-center pt-4 border-t border-slate-200 dark:border-white/10", className)}
+      {...props}
+    >
+      {children}
+    </div>
   );
 }

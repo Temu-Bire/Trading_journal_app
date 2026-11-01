@@ -18,7 +18,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className="block text-xs font-medium text-foreground"
+            className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200"
           >
             {label}
           </label>
@@ -28,23 +28,27 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             id={selectId}
             ref={ref}
             className={cn(
-              "flex h-10 w-full appearance-none rounded-xl border border-input bg-card px-3.5 py-2 pr-9 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-transparent transition-all disabled:cursor-not-allowed disabled:opacity-50",
-              error && "border-loss focus-visible:ring-loss",
+              "flex h-11 w-full appearance-none rounded-2xl border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-[#151c2e] px-4 py-2.5 pr-10",
+              "text-sm font-semibold text-slate-900 dark:text-white",
+              "focus-visible:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-500/15",
+              "hover:border-slate-400 dark:hover:border-slate-600 shadow-2xs cursor-pointer",
+              "transition-all disabled:cursor-not-allowed disabled:opacity-50",
+              error && "border-rose-500 focus:border-rose-600 focus:ring-rose-500/20",
               className
             )}
             {...props}
           >
             {options.map((opt) => (
-              <option key={opt.value} value={opt.value}>
+              <option key={opt.value} value={opt.value} className="bg-white dark:bg-[#151c2e] text-slate-900 dark:text-white">
                 {opt.label}
               </option>
             ))}
           </select>
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-muted-foreground">
+          <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-500 dark:text-slate-400">
             <ChevronDown className="w-4 h-4" />
           </div>
         </div>
-        {error && <p className="text-xs text-loss font-medium mt-1">{error}</p>}
+        {error && <p className="text-xs text-rose-600 dark:text-rose-400 font-semibold mt-1">{error}</p>}
       </div>
     );
   }

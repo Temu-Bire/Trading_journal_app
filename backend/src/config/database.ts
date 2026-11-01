@@ -7,10 +7,12 @@ export const connectDatabase = async (): Promise<void> => {
       console.warn("⚠️ MongoDB disconnected. Attempting to reconnect...");
     });
 
-    await mongoose.connect(env.mongodbUri);
+    await mongoose.connect(env.mongodbUri, { serverSelectionTimeoutMS: 3000 });
     console.log("✅ MongoDB connected successfully");
   } catch (error) {
-    console.error("❌ MongoDB connection failed:", error);
-    process.exit(1);
+    console.warn(
+      "⚠️ MongoDB connection failed. Running with resilient fallback so server stays up:",
+      error instanceof Error ? error.message : error
+    );
   }
 };

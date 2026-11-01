@@ -35,6 +35,15 @@ export default function SettingsPage() {
   const [defaultRisk, setDefaultRisk] = useState("1.0");
   const [defaultMarket, setDefaultMarket] = useState("forex");
   const [savingPrefs, setSavingPrefs] = useState(false);
+  const [customName, setCustomName] = useState(user?.name || "");
+  const handleSaveName = () => {
+    if (!customName.trim()) return;
+    if (typeof window !== "undefined") {
+      const updated = { ...(user || {}), name: customName.trim() };
+      sessionStorage.setItem("current_user", JSON.stringify(updated));
+      window.location.reload();
+    }
+  };
 
   // API Health status
   const [apiHealth, setApiHealth] = useState<{
