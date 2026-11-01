@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   BarChart3,
   TrendingUp,
@@ -96,8 +97,16 @@ const sampleTrades = [
 
 export default function LandingPage() {
   const { user } = useAuth();
+  const router = useRouter();
   const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    // When user loads home page, route smoothly to TradeFlow PRO Dashboard
+    if (user) {
+      router.push("/overview");
+    }
+  }, [user, router]);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/20 selection:text-primary">
@@ -105,16 +114,16 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 bg-background/85 backdrop-blur-md border-b border-border/80 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo & Brand Name */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-slate-950 text-white flex items-center justify-center shadow-xs dark:bg-primary dark:text-white transition-transform group-hover:scale-105">
-              <BarChart3 className="w-5 h-5" />
+          <Link href="/overview" className="flex items-center gap-2.5 group">
+            <div className="w-8 h-8 rounded-lg bg-[#3b82f6] flex items-center justify-center text-white shrink-0 shadow-md shadow-blue-500/20 transition-transform group-hover:scale-105">
+              <TrendingUp className="w-4 h-4 stroke-[2.5]" />
             </div>
-            <div>
-              <span className="font-bold text-base tracking-tight text-foreground block">
-                Trading Journal
+            <div className="flex items-center gap-1.5">
+              <span className="font-extrabold text-[17px] tracking-tight text-foreground">
+                TradeFlow
               </span>
-              <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider block">
-                Pro Analytics
+              <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] text-white shadow-xs">
+                PRO
               </span>
             </div>
           </Link>

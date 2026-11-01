@@ -132,6 +132,19 @@ const navItems: NavItem[] = [
     href: "/goals",
     icon: Flag,
   },
+
+  // SYSTEM & PREFERENCES
+  {
+    name: "Settings",
+    href: "/settings",
+    icon: Settings,
+    dividerBefore: true,
+  },
+  {
+    name: "Help & Support",
+    href: "/help",
+    icon: HelpCircle,
+  },
 ];
 
 export function Sidebar() {
