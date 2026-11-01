@@ -3,234 +3,223 @@
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import {
-  Calendar,
-  ChevronDown,
+  Bell,
+  ChevronRight,
   Sun,
   Moon,
   Plus,
   Menu,
   X,
-  LayoutDashboard,
-  TrendingUp,
-  ArrowLeftRight,
-  Target,
-  BookOpen,
-  Settings,
-  HelpCircle,
   LogOut,
-  Check,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-interface TopNavProps {
-  onNewTradeClick?: () => void;
-  showNewTradeButton?: boolean;
-}
+const ROUTE_TITLES: Record<string, string> = {
+  overview: "Dashboard",
+  trades: "Trade History",
+  signals: "AI Signals & Scanner",
+  copilot: "AI Trade Copilot",
+  arena: "Agent Arena",
+  plans: "Trade Plans",
+  strategies: "Strategies",
+  risk: "Risk Management",
+  psychology: "Psychology",
+  journal: "Trading Journal",
+  rules: "Rules & Discipline",
+  analytics: "Analytics & Reports",
+  goals: "Goals & Progress",
+  settings: "Settings",
+  help: "Help & Support",
+};
 
-const navItems = [
-  { name: "Overview", href: "/overview", icon: LayoutDashboard },
-  { name: "Analytics", href: "/analytics", icon: TrendingUp },
-  { name: "Trades", href: "/trades", icon: ArrowLeftRight },
-  { name: "Strategies", href: "/strategies", icon: Target },
-  { name: "Journal", href: "/journal", icon: BookOpen },
-  { name: "Settings", href: "/settings", icon: Settings },
-  { name: "Help & Support", href: "/help", icon: HelpCircle },
-];
-
-export function TopNav({ onNewTradeClick, showNewTradeButton = true }: TopNavProps) {
+export function TopNav() {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [dateFilterOpen, setDateFilterOpen] = useState(false);
-  const [selectedRange, setSelectedRange] = useState("Last 30 Days");
-
-  const isExcludedPage =
-    pathname.startsWith("/trades") ||
-    pathname.startsWith("/analytics") ||
-    pathname.startsWith("/strategies") ||
-    pathname.startsWith("/journal");
-
-  const shouldShowNewTrade = showNewTradeButton && !isExcludedPage;
 
   const getPageTitle = () => {
-    if (pathname.startsWith("/overview")) return "Overview";
-    if (pathname.startsWith("/analytics")) return "Analytics";
-    if (pathname.startsWith("/trades")) return "Trades";
-    if (pathname.startsWith("/strategies")) return "Strategies";
-    if (pathname.startsWith("/journal")) return "Journal";
-    if (pathname.startsWith("/settings")) return "Settings";
-    if (pathname.startsWith("/help")) return "Help & Support";
-    return "Dashboard";
+    const segments = pathname.split("/").filter(Boolean);
+    const last = segments[segments.length - 1];
+    return ROUTE_TITLES[last] || "Dashboard";
   };
 
-  const dateOptions = ["Today", "Last 7 Days", "Last 30 Days", "This Month", "All Time"];
+  const initials = user?.name
+    ? user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "DO";
 
   return (
     <>
-      {/* Glassy header */}
-      <header className="sticky top-0 z-40 glass border-b border-border/60 px-4 sm:px-8 py-3.5 transition-all duration-300">
-        <div className="flex items-center justify-between gap-4">
-          {/* Mobile hamburger + Page Title */}
+      {/* ── Top Header Bar (Exact ZMenu Style from Image) ── */}
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0a0e1a]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-white/[0.08] transition-all duration-300">
+        <div className="flex items-center justify-between h-[64px] px-6 sm:px-8">
+          {/* Left: Mobile Hamburger & Breadcrumb */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="lg:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-card border border-border transition-all duration-200 hover:shadow-card"
-              aria-label="Open navigation menu"
+              className="lg:hidden p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.08] transition-colors"
+              aria-label="Open menu"
             >
               <Menu className="w-5 h-5" />
             </button>
-            <div className="flex items-center gap-2.5">
-              <h1 className="text-xl font-bold tracking-tight text-foreground animate-fade-in">
+
+            {/* Breadcrumb Path like Screenshot: "TradeFlow > Branding" */}
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-slate-400 font-medium tracking-tight">TradeFlow</span>
+              <span className="text-slate-300 dark:text-slate-600">
+                <ChevronRight className="w-3.5 h-3.5" />
+              </span>
+              <span className="text-slate-900 dark:text-white font-bold tracking-tight">
                 {getPageTitle()}
-              </h1>
+              </span>
             </div>
           </div>
 
-          {/* Right actions */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
-            {/* Date Range Picker */}
-            <div className="relative">
-              <button
-                onClick={() => setDateFilterOpen(!dateFilterOpen)}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-card/80 text-xs sm:text-sm font-medium text-foreground hover:bg-card hover:shadow-card transition-all duration-200"
-              >
-                <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-                <span className="hidden sm:inline">{selectedRange}</span>
-                <ChevronDown
-                  className={cn(
-                    "w-3.5 h-3.5 text-muted-foreground transition-transform duration-200",
-                    dateFilterOpen && "rotate-180"
-                  )}
-                />
-              </button>
-
-              {dateFilterOpen && (
-                <div className="absolute right-0 mt-2 w-44 rounded-xl border border-border bg-card shadow-dropdown p-1.5 z-50 animate-scale-in animate-fade-down">
-                  {dateOptions.map((opt) => (
-                    <button
-                      key={opt}
-                      onClick={() => {
-                        setSelectedRange(opt);
-                        setDateFilterOpen(false);
-                      }}
-                      className={cn(
-                        "w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
-                        selectedRange === opt
-                          ? "bg-primary-muted text-primary font-semibold"
-                          : "text-foreground hover:bg-muted"
-                      )}
-                    >
-                      {opt}
-                      {selectedRange === opt && <Check className="w-3.5 h-3.5" />}
-                    </button>
-                  ))}
-                </div>
-              )}
+          {/* Right: Live Pill, Notifications, User Pill & Logout */}
+          <div className="flex items-center gap-3.5">
+            {/* Live Indicator Pill (from image: mint green background with dot) */}
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ecfdf5] dark:bg-emerald-950/40 text-[#047857] dark:text-emerald-300 border border-[#a7f3d0] dark:border-emerald-800/40 text-xs font-semibold shadow-[0_0_12px_rgba(16,185,129,0.18)]">
+              <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
+              <span>Live</span>
             </div>
 
-            {/* Theme Toggle */}
+            {/* Yellow Notification Bell with Amber Glow (from image) */}
+            <button
+              className="relative p-2 rounded-full text-amber-500 hover:bg-amber-500/10 transition-colors"
+              title="Notifications"
+              aria-label="Notifications"
+            >
+              <Bell className="w-4 h-4 fill-amber-400 text-amber-500" />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-amber-500" />
+            </button>
+
+            {/* Theme Toggle (Light / Dark) */}
             <button
               onClick={toggleTheme}
-              className="relative p-2 rounded-xl border border-border bg-card/80 text-muted-foreground hover:text-foreground hover:bg-card transition-all duration-200 hover:shadow-card overflow-hidden group"
-              aria-label="Toggle light and dark theme"
+              className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/[0.08] transition-colors"
+              title="Toggle theme"
+              aria-label="Toggle theme"
             >
-              <span className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-amber-400/10 to-violet-500/10" />
               {theme === "dark" ? (
-                <Sun className="w-4 h-4 text-amber-400 relative z-10" />
+                <Sun className="w-4 h-4 text-amber-400" />
               ) : (
-                <Moon className="w-4 h-4 text-slate-500 relative z-10" />
+                <Moon className="w-4 h-4 text-slate-600" />
               )}
             </button>
 
-            {/* Prominent "+ New Trade" Button with pulse ring */}
-            {shouldShowNewTrade && (
-              <div className="relative">
-                {/* Animated pulse ring */}
-                <span className="absolute inset-0 rounded-xl border-2 border-primary/40 animate-ping opacity-30 pointer-events-none" />
-                {onNewTradeClick ? (
-                  <Button
-                    variant="primary"
-                    size="md"
-                    onClick={onNewTradeClick}
-                    icon={<Plus className="w-4 h-4" />}
-                    className="relative font-semibold shadow-glow-primary hover:shadow-glow bg-gradient-to-r from-primary to-blue-500 hover:from-primary-hover hover:to-blue-600 transition-all duration-300"
-                  >
-                    <span className="hidden sm:inline">New Trade</span>
-                    <span className="sm:hidden">Add</span>
-                  </Button>
-                ) : (
-                  <Link href="/trades/new">
-                    <Button
-                      variant="primary"
-                      size="md"
-                      icon={<Plus className="w-4 h-4" />}
-                      className="relative font-semibold shadow-glow-primary hover:shadow-glow bg-gradient-to-r from-primary to-blue-500 hover:from-primary-hover hover:to-blue-600 transition-all duration-300"
-                    >
-                      <span className="hidden sm:inline">New Trade</span>
-                      <span className="sm:hidden">Add</span>
-                    </Button>
-                  </Link>
-                )}
+            {/* Vertical Divider Line */}
+            <div className="h-6 w-px bg-slate-200 dark:bg-white/[0.1] mx-0.5" />
+
+            {/* User Profile Pill (Avatar + Name + Role + Chevron) */}
+            <Link
+              href="/settings"
+              className="hidden sm:flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors group"
+            >
+              {/* Circular Purple Avatar like screenshot */}
+              <div className="w-8 h-8 rounded-full bg-[#8b5cf6] text-white font-bold text-xs flex items-center justify-center shrink-0 border-2 border-white dark:border-[#0a0e1a] shadow-sm">
+                {initials}
               </div>
-            )}
+
+              <div className="flex flex-col text-left leading-tight">
+                <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                  {user?.name || "Demo Owner"}
+                </span>
+                <span className="text-[10px] text-slate-400 capitalize">
+                  {user?.role || "Owner"}
+                </span>
+              </div>
+
+              <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+
+            {/* Direct Logout Button */}
+            <button
+              onClick={() => logout()}
+              className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors"
+              title="Sign Out"
+              aria-label="Sign Out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
         </div>
+
+        {/* ── Exact ZMenu 2px Gradient Line Accent underneath header ── */}
+        <div className="h-[2px] w-full bg-gradient-to-r from-[#6366f1] via-[#8b5cf6] to-[#06b6d4]" />
       </header>
 
-      {/* Mobile Drawer Navigation */}
+      {/* ── Mobile Drawer Navigation ── */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/60 dark:bg-black/75 animate-fade-in"
+            className="fixed inset-0 bg-[#090d16]/80 backdrop-blur-sm animate-fade-in"
             onClick={() => setMobileMenuOpen(false)}
           />
-          {/* Drawer */}
-          <div className="fixed inset-y-0 left-0 w-72 bg-card border-r border-border p-6 flex flex-col justify-between shadow-dropdown animate-slide-in-left">
+          <div className="fixed inset-y-0 left-0 w-72 bg-[#090d16] border-r border-white/10 p-5 flex flex-col justify-between shadow-2xl animate-slide-in-left overflow-y-auto">
             <div>
-              <div className="flex items-center justify-between mb-8">
-                <span className="font-bold text-lg text-foreground tracking-tight">
-                  Trading Journal
-                </span>
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-[#3b82f6] flex items-center justify-center">
+                    <span className="text-white font-black text-xs">TF</span>
+                  </div>
+                  <span className="font-extrabold text-base text-white tracking-tight">
+                    TradeFlow
+                  </span>
+                  <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] text-white">
+                    PRO
+                  </span>
+                </div>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                  className="p-1.5 rounded-lg bg-white/10 text-white/70 hover:text-white"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <nav className="space-y-0.5">
-                {navItems.map((item, idx) => {
-                  const isActive = pathname === item.href;
-                  const Icon = item.icon;
+              <nav className="space-y-1">
+                {[
+                  { name: "Dashboard", href: "/overview" },
+                  { name: "New Trade", href: "/trades/new" },
+                  { name: "Trade History", href: "/trades" },
+                  { name: "AI Signals", href: "/signals" },
+                  { name: "AI Copilot", href: "/copilot" },
+                  { name: "Agent Arena", href: "/arena" },
+                  { name: "Trade Plans", href: "/plans" },
+                  { name: "Strategies", href: "/strategies" },
+                  { name: "Risk Management", href: "/risk" },
+                  { name: "Psychology", href: "/psychology" },
+                  { name: "Trading Journal", href: "/journal" },
+                  { name: "Rules & Discipline", href: "/rules" },
+                  { name: "Analytics & Reports", href: "/analytics" },
+                  { name: "Goals & Progress", href: "/goals" },
+                  { name: "Settings", href: "/settings" },
+                  { name: "Help & Support", href: "/help" },
+                ].map((item) => {
+                  const isActive =
+                    pathname === item.href ||
+                    (item.href !== "/overview" && pathname.startsWith(item.href));
                   return (
                     <Link
                       key={item.name}
                       href={item.href}
-                      prefetch={true}
                       onClick={() => setMobileMenuOpen(false)}
                       className={cn(
-                        "relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group",
+                        "block px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150",
                         isActive
-                          ? "bg-primary-muted text-primary font-semibold"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                          ? "bg-gradient-to-r from-[#4f46e5] to-[#6366f1] text-white shadow-md"
+                          : "text-slate-400 hover:text-white hover:bg-white/[0.08]"
                       )}
                     >
-                      {isActive && (
-                        <span className="absolute left-0 inset-y-1.5 w-0.5 bg-primary rounded-r-full" />
-                      )}
-                      <Icon
-                        className={cn(
-                          "w-5 h-5 transition-transform duration-200",
-                          isActive ? "text-primary" : "group-hover:scale-110"
-                        )}
-                      />
                       {item.name}
                     </Link>
                   );
@@ -238,25 +227,25 @@ export function TopNav({ onNewTradeClick, showNewTradeButton = true }: TopNavPro
               </nav>
             </div>
 
-            <div className="pt-4 border-t border-border animate-fade-up delay-400">
-              <div className="flex items-center justify-between mb-3">
+            <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-[#8b5cf6] text-white text-xs font-bold flex items-center justify-center">
+                  {initials}
+                </div>
                 <div>
-                  <p className="text-xs font-semibold text-foreground">{user?.name}</p>
-                  <p className="text-[10px] text-muted-foreground capitalize">{user?.role}</p>
+                  <p className="text-xs font-bold text-white truncate">{user?.name || "Demo Owner"}</p>
+                  <p className="text-[10px] text-slate-400 capitalize">{user?.role || "Owner"}</p>
                 </div>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full justify-start text-loss gap-2 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 dark:border-rose-900/50 transition-colors"
+              <button
                 onClick={() => {
                   setMobileMenuOpen(false);
                   logout();
                 }}
+                className="text-rose-400 hover:text-rose-300 text-xs font-semibold p-1.5"
               >
-                <LogOut className="w-4 h-4" />
                 Sign Out
-              </Button>
+              </button>
             </div>
           </div>
         </div>
