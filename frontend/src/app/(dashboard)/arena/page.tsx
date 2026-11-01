@@ -118,7 +118,7 @@ export default function ArenaPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Arena Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-950 via-slate-900 to-indigo-950 border border-amber-500/20 p-6 sm:p-8 text-white shadow-xl">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#090d16] via-[#0f1422] to-[#151c2e] border border-slate-300 dark:border-white/10 p-6 sm:p-8 text-white shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)]">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-semibold tracking-wide uppercase">
@@ -150,7 +150,7 @@ export default function ArenaPage() {
 
       {/* Human vs Machine Comparison Card */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <Card className="p-5 border border-indigo-500/30 bg-gradient-to-br from-indigo-500/5 to-transparent">
+        <Card className="p-5 rounded-3xl border border-slate-300 dark:border-white/10 bg-white dark:bg-[#0f1422] shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-500 flex items-center justify-center">
               <User className="w-5 h-5" />
@@ -166,7 +166,7 @@ export default function ArenaPage() {
           </p>
         </Card>
 
-        <Card className="p-5 border border-amber-500/30 bg-gradient-to-br from-amber-500/5 to-transparent">
+        <Card className="p-5 rounded-3xl border border-slate-300 dark:border-white/10 bg-white dark:bg-[#0f1422] shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-500 flex items-center justify-center">
               <Bot className="w-5 h-5" />
@@ -182,7 +182,7 @@ export default function ArenaPage() {
           </p>
         </Card>
 
-        <Card className="p-5 border border-emerald-500/30 bg-gradient-to-br from-emerald-500/5 to-transparent">
+        <Card className="p-5 rounded-3xl border border-slate-300 dark:border-white/10 bg-white dark:bg-[#0f1422] shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-500 flex items-center justify-center">
               <Sparkles className="w-5 h-5" />
@@ -200,7 +200,7 @@ export default function ArenaPage() {
       </div>
 
       {/* Leaderboard Table Card */}
-      <Card className="border border-border shadow-sm overflow-hidden">
+      <Card className="rounded-3xl border border-slate-300 dark:border-white/10 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] overflow-hidden">
         <CardHeader className="p-5 border-b border-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <CardTitle className="text-base font-bold flex items-center gap-2">

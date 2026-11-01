@@ -112,7 +112,7 @@ export default function CopilotPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 border border-purple-500/20 p-6 sm:p-8 text-white shadow-xl">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#090d16] via-[#0f1422] to-[#151c2e] border border-slate-300 dark:border-white/10 p-6 sm:p-8 text-white shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)]">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 text-xs font-semibold tracking-wide uppercase">
@@ -232,7 +232,7 @@ export default function CopilotPage() {
         </div>
 
         {/* Right Column: Interactive Copilot Chat (5 cols) */}
-        <div className="lg:col-span-5 flex flex-col h-[600px] border border-border bg-card rounded-2xl shadow-sm overflow-hidden">
+        <div className="lg:col-span-5 flex flex-col h-[600px] border border-slate-300 dark:border-white/10 bg-white dark:bg-[#0f1422] rounded-3xl shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] overflow-hidden">
           {/* Chat Header */}
           <div className="p-4 border-b border-border bg-muted/30 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
@@ -309,7 +309,7 @@ export default function CopilotPage() {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               placeholder="Ask Copilot about any trade, rule, or emotion..."
-              className="flex-1 bg-muted/40 border border-border rounded-xl px-3.5 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              className="flex-1 bg-white dark:bg-[#151c2e] border-2 border-slate-300 dark:border-slate-700 rounded-2xl px-4 py-2.5 text-xs font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-500/15 shadow-2xs"
             />
             <Button type="submit" size="sm" className="bg-primary hover:bg-primary-hover text-white px-3">
               <Send className="w-3.5 h-3.5" />
