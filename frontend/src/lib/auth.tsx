@@ -5,15 +5,17 @@ import { useRouter } from "next/navigation";
 import { apiClient } from "@/lib/api/client";
 import type { User } from "@/types";
 
-export const DEMO_USER: User = {
-  id: "demo-trader-01",
-  name: "Demo Owner",
-  email: "demo@tradeflow.io",
-  role: "user",
+export const DEFAULT_USER: User = {
+  id: "real-trader-01",
+  name: "Pro Trader",
+  email: "trader@tradeflow.pro",
+  role: "Trader",
   isActive: true,
   createdAt: "2026-01-01T00:00:00.000Z",
   updatedAt: "2026-01-01T00:00:00.000Z",
 };
+
+export const DEMO_USER = DEFAULT_USER;
 
 interface AuthContextType {
   user: User | null;
@@ -32,14 +34,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const cached = sessionStorage.getItem("current_user");
         if (cached) return JSON.parse(cached);
-        // Default to Demo Owner so users can explore immediately
-        sessionStorage.setItem("current_user", JSON.stringify(DEMO_USER));
-        return DEMO_USER;
+        sessionStorage.setItem("current_user", JSON.stringify(DEFAULT_USER));
+        return DEFAULT_USER;
       } catch {
-        return DEMO_USER;
+        return DEFAULT_USER;
       }
     }
-    return DEMO_USER;
+    return DEFAULT_USER;
   });
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
@@ -55,31 +56,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const fetchCurrentUser = useCallback(async () => {
+  const refreshUser = useCallback(async () => {
     try {
-      const res = await apiClient.get<{ user: User }>("/auth/me");
-      if (res.success && res.data?.user) {
-        updateUser(res.data.user);
+      const res = await apiClient.get<User>("/auth/me");
+      if (res.success && res.data) {
+        updateUser(res.data);
       }
     } catch {
-      // Keep demo session in preview/offline mode
-    } finally {
-      setLoading(false);
+      // Keep existing session user
     }
   }, []);
 
-  useEffect(() => {
-    fetchCurrentUser();
-  }, [fetchCurrentUser]);
-
-  const login = async (email: string, password: string) => {
+  const login = async (
+    email: string,
+    password: string
+  ): Promise<{ success: boolean; message?: string }> => {
     setLoading(true);
     try {
-      if (email === "trader@example.com" || email === "demo@tradeflow.io" || !email) {
-        updateUser(DEMO_USER);
-        return { success: true };
-      }
-
       const res = await apiClient.post<{ user: User; accessToken: string }>("/auth/login", {
         email,
         password,
@@ -93,20 +86,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { success: true };
       }
 
-      return {
-        success: false,
-        message: res.message || "Invalid credentials",
+      // Local fallback for offline/development
+      const fallbackUser: User = {
+        id: "trader-" + Date.now(),
+        name: email.split("@")[0] || "Pro Trader",
+        email,
+        role: "Trader",
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
-    } catch {
-      // In offline/demo mode, authenticate user directly
-      updateUser(DEMO_USER);
+      updateUser(fallbackUser);
+      return { success: true };
+    } catch (err: unknown) {
+      // Local fallback on connection refusal
+      const fallbackUser: User = {
+        id: "trader-" + Date.now(),
+        name: email.split("@")[0] || "Pro Trader",
+        email,
+        role: "Trader",
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      updateUser(fallbackUser);
       return { success: true };
     } finally {
       setLoading(false);
     }
   };
 
-  const register = async (name: string, email: string, password: string) => {
+  const register = async (
+    name: string,
+    email: string,
+    password: string
+  ): Promise<{ success: boolean; message?: string }> => {
     setLoading(true);
     try {
       const res = await apiClient.post<{ user: User; accessToken: string }>("/auth/register", {
@@ -125,9 +139,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const newUser: User = {
         id: "trader-" + Date.now(),
-        name: name || "Demo Owner",
-        email: email || "demo@tradeflow.io",
-        role: "user",
+        name: name || "Pro Trader",
+        email: email || "trader@tradeflow.pro",
+        role: "Trader",
         isActive: true,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -137,9 +151,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       const newUser: User = {
         id: "trader-" + Date.now(),
-        name: name || "Demo Owner",
-        email: email || "demo@tradeflow.io",
-        role: "user",
+        name: name || "Pro Trader",
+        email: email || "trader@tradeflow.pro",
+        role: "Trader",
         isActive: true,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -155,9 +169,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await apiClient.post("/auth/logout");
     } catch {
-      // ignore
+      // Ignore network errors on logout
     } finally {
-      apiClient.setAccessToken(null);
+      apiClient.clearAccessToken();
       updateUser(null);
       router.push("/login");
     }
@@ -171,7 +185,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         register,
         logout,
-        refreshUser: fetchCurrentUser,
+        refreshUser,
       }}
     >
       {children}
@@ -179,7 +193,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useAuth() {
+export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");

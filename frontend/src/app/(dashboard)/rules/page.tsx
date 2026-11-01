@@ -199,7 +199,7 @@ export default function RulesDisciplinePage() {
         {rules.map((rule: TradingRule, idx: number) => (
           <Card
             key={rule.id}
-            className="p-4 border border-border hover:border-primary/40 transition-all duration-150 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border border-slate-300 dark:border-white/10 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
           >
             <div className="flex items-start gap-3.5">
               <span className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground shrink-0 mt-0.5">
@@ -230,14 +230,14 @@ export default function RulesDisciplinePage() {
                   {rule.adherenceRate}%
                 </span>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
                 onClick={() => setRules(rules.filter((r: TradingRule) => r.id !== rule.id))}
-                className="text-muted-foreground hover:text-rose-500 h-8 w-8 p-0"
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/80 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 hover:bg-rose-100 text-xs font-bold transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
+                title="Delete rule"
               >
-                <Trash2 className="w-4 h-4" />
-              </Button>
+                <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                <span>Delete</span>
+              </button>
             </div>
           </Card>
         ))}

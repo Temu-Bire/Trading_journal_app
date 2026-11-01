@@ -361,7 +361,7 @@ export default function CommunityPage() {
                 value={newMessageText}
                 onChange={(e) => setNewMessageText(e.target.value)}
                 placeholder={`Message ${CHANNELS.find((c) => c.id === activeChannel)?.name}...`}
-                className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#151c2e] text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                className="flex-1 px-4 py-2.5 rounded-2xl border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-[#151c2e] text-xs font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-500/15 shadow-2xs"
               />
               <Button
                 type="submit"
@@ -611,3 +611,4 @@ export default function CommunityPage() {
     </div>
   );
 }
+

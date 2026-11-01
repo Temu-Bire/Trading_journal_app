@@ -23,9 +23,9 @@ export function Card({
   return (
     <div
       className={cn(
-        "bg-white dark:bg-[#111726] text-card-foreground rounded-3xl border border-slate-200/80 dark:border-white/[0.08] shadow-[0_4px_24px_-4px_rgba(15,23,42,0.05),0_2px_8px_-2px_rgba(15,23,42,0.03)] transition-all duration-300",
+        "bg-white dark:bg-[#0f1422] text-card-foreground rounded-3xl border border-slate-300 dark:border-white/10 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] transition-all duration-300",
         interactive &&
-          "hover:shadow-lg hover:-translate-y-0.5 hover:border-indigo-500/30 cursor-pointer",
+          "hover:shadow-[0_12px_32px_-4px_rgba(15,23,42,0.1),0_4px_12px_-2px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:border-indigo-500/40 cursor-pointer",
         paddings[padding],
         className
       )}
@@ -73,7 +73,7 @@ export function CardDescription({
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={cn("text-xs text-slate-500 dark:text-slate-400 mt-1", className)}
+      className={cn("text-xs text-slate-500 dark:text-slate-400 font-medium", className)}
       {...props}
     >
       {children}
@@ -87,7 +87,7 @@ export function CardContent({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("", className)} {...props}>
+    <div className={cn("pt-0", className)} {...props}>
       {children}
     </div>
   );
@@ -100,7 +100,7 @@ export function CardFooter({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("flex items-center pt-4 border-t border-slate-100 dark:border-white/[0.06]", className)}
+      className={cn("flex items-center pt-4 border-t border-slate-200 dark:border-white/10", className)}
       {...props}
     >
       {children}

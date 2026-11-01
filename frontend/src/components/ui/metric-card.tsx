@@ -92,8 +92,9 @@ export function MetricCard({
   return (
     <div
       className={cn(
-        "group rounded-3xl border border-slate-200/80 dark:border-white/[0.08] bg-white dark:bg-[#111726] p-6 sm:p-7 shadow-[0_4px_24px_-4px_rgba(15,23,42,0.05),0_2px_8px_-2px_rgba(15,23,42,0.03)]",
-        "hover:shadow-[0_8px_30px_-6px_rgba(15,23,42,0.09)] hover:-translate-y-0.5 hover:border-indigo-500/30",
+        "group rounded-3xl border border-slate-300 dark:border-white/10 bg-white dark:bg-[#0f1422] p-6 sm:p-7",
+        "shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)]",
+        "hover:shadow-[0_12px_32px_-4px_rgba(15,23,42,0.1),0_4px_12px_-2px_rgba(15,23,42,0.06)] hover:-translate-y-1 hover:border-indigo-500/40",
         "transition-all duration-300 relative overflow-hidden flex flex-col justify-between select-none",
         className
       )}
@@ -102,20 +103,20 @@ export function MetricCard({
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-3xl"
         style={{
-          background: `radial-gradient(ellipse at top right, ${activeColor.stopColor}10 0%, transparent 65%)`,
+          background: `radial-gradient(ellipse at top right, ${activeColor.stopColor}12 0%, transparent 65%)`,
         }}
       />
 
       <div className="relative">
         {/* Top Header */}
         <div className="flex items-center justify-between gap-2 mb-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             {title}
           </span>
           {icon && (
             <div
               className={cn(
-                "w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0",
+                "w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-xs",
                 "transition-all duration-300 group-hover:scale-110",
                 activeColor.iconGlow,
                 iconBgColor
@@ -129,7 +130,7 @@ export function MetricCard({
         {/* Big Metric Value */}
         <div
           className={cn(
-            "text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2",
+            "text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2.5",
             mounted && "animate-count-up"
           )}
         >
@@ -141,21 +142,21 @@ export function MetricCard({
           <div className="flex items-center gap-2 text-xs font-medium">
             <span
               className={cn(
-                "flex items-center gap-1 font-bold px-2 py-0.5 rounded-full text-[11px]",
+                "flex items-center gap-1 font-bold px-2.5 py-0.5 rounded-full text-[11px] shadow-2xs",
                 change.isPositive !== false
-                  ? "text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/40"
-                  : "text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800/40"
+                  ? "text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800/40"
+                  : "text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/50 border border-rose-300 dark:border-rose-800/40"
               )}
             >
               {change.isPositive !== false ? (
-                <TrendingUp className="w-3 h-3 text-emerald-500" />
+                <TrendingUp className="w-3 h-3 text-emerald-600" />
               ) : (
-                <TrendingDown className="w-3 h-3 text-rose-500" />
+                <TrendingDown className="w-3 h-3 text-rose-600" />
               )}
               {change.value}
             </span>
             {change.period && (
-              <span className="text-[11px] text-slate-400 capitalize">
+              <span className="text-[11px] text-slate-500 dark:text-slate-400 capitalize font-medium">
                 {change.period}
               </span>
             )}
@@ -165,7 +166,7 @@ export function MetricCard({
 
       {/* Mini Sparkline Chart */}
       {hasSparkline && (
-        <div className="relative mt-4 pt-3 border-t border-slate-100 dark:border-white/[0.06] flex items-center justify-between">
+        <div className="relative mt-4 pt-3 border-t border-slate-200 dark:border-white/[0.06] flex items-center justify-between">
           <span className="text-[10px] text-slate-400 font-medium">Session Pacing</span>
           <svg width={width} height={height} className="overflow-visible">
             <defs>

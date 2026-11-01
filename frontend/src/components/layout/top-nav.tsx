@@ -56,12 +56,12 @@ export function TopNav() {
         .join("")
         .toUpperCase()
         .slice(0, 2)
-    : "DO";
+    : "PT";
 
   return (
     <>
       {/* ── Top Header Bar (Exact ZMenu Style from Image) ── */}
-      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0a0e1a]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-white/[0.08] transition-all duration-300">
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0a0e1a]/95 backdrop-blur-md border-b border-slate-300 dark:border-white/[0.08] transition-all duration-300 shadow-2xs">
         <div className="flex items-center justify-between h-[64px] px-6 sm:px-8">
           {/* Left: Mobile Hamburger & Breadcrumb */}
           <div className="flex items-center gap-3">
@@ -75,11 +75,11 @@ export function TopNav() {
 
             {/* Breadcrumb Path like Screenshot: "TradeFlow > Branding" */}
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-slate-400 font-medium tracking-tight">TradeFlow</span>
+              <span className="text-slate-400 font-semibold tracking-tight">TradeFlow</span>
               <span className="text-slate-300 dark:text-slate-600">
                 <ChevronRight className="w-3.5 h-3.5" />
               </span>
-              <span className="text-slate-900 dark:text-white font-bold tracking-tight">
+              <span className="text-slate-900 dark:text-white font-extrabold tracking-tight">
                 {getPageTitle()}
               </span>
             </div>
@@ -88,7 +88,7 @@ export function TopNav() {
           {/* Right: Live Pill, Notifications, User Pill & Logout */}
           <div className="flex items-center gap-3.5">
             {/* Live Indicator Pill (from image: mint green background with dot) */}
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ecfdf5] dark:bg-emerald-950/40 text-[#047857] dark:text-emerald-300 border border-[#a7f3d0] dark:border-emerald-800/40 text-xs font-semibold shadow-[0_0_12px_rgba(16,185,129,0.18)]">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ecfdf5] dark:bg-emerald-950/40 text-[#047857] dark:text-emerald-300 border border-[#a7f3d0] dark:border-emerald-800/40 text-xs font-bold shadow-[0_0_12px_rgba(16,185,129,0.18)]">
               <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
               <span>Live</span>
             </div>
@@ -118,7 +118,7 @@ export function TopNav() {
             </button>
 
             {/* Vertical Divider Line */}
-            <div className="h-6 w-px bg-slate-200 dark:bg-white/[0.1] mx-0.5" />
+            <div className="h-6 w-px bg-slate-300 dark:bg-white/[0.1] mx-0.5" />
 
             {/* User Profile Pill (Avatar + Name + Role + Chevron) */}
             <Link
@@ -132,10 +132,10 @@ export function TopNav() {
 
               <div className="flex flex-col text-left leading-tight">
                 <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
-                  {user?.name || "Demo Owner"}
+                  {user?.name || "Pro Trader"}
                 </span>
-                <span className="text-[10px] text-slate-400 capitalize">
-                  {user?.role || "Owner"}
+                <span className="text-[10px] text-slate-400 font-semibold capitalize">
+                  {user?.role || "Trader"}
                 </span>
               </div>
 
@@ -153,70 +153,52 @@ export function TopNav() {
             </button>
           </div>
         </div>
-
-        {/* ── Exact ZMenu 2px Gradient Line Accent underneath header ── */}
-        <div className="h-[2px] w-full bg-gradient-to-r from-[#6366f1] via-[#8b5cf6] to-[#06b6d4]" />
       </header>
 
-      {/* ── Mobile Drawer Navigation ── */}
+      {/* ── Mobile Navigation Drawer ── */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div
-            className="fixed inset-0 bg-[#090d16]/80 backdrop-blur-sm animate-fade-in"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-          <div className="fixed inset-y-0 left-0 w-72 bg-[#090d16] border-r border-white/10 p-5 flex flex-col justify-between shadow-2xl animate-slide-in-left overflow-y-auto">
+        <div className="fixed inset-0 z-50 md:hidden bg-black/60 backdrop-blur-xs flex">
+          <div className="w-[280px] bg-[#090d16] text-white h-full p-5 flex flex-col justify-between border-r border-white/10 shadow-2xl">
             <div>
-              <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+              <div className="flex items-center justify-between pb-4 border-b border-white/10">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-[#3b82f6] flex items-center justify-center">
-                    <span className="text-white font-black text-xs">TF</span>
+                  <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-white font-bold">
+                    TF
                   </div>
-                  <span className="font-extrabold text-base text-white tracking-tight">
-                    TradeFlow
-                  </span>
-                  <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] text-white">
+                  <span className="font-extrabold text-lg">TradeFlow</span>
+                  <span className="text-[10px] font-black uppercase px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400">
                     PRO
                   </span>
                 </div>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-1.5 rounded-lg bg-white/10 text-white/70 hover:text-white"
+                  className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <nav className="space-y-1">
+              <nav className="mt-4 space-y-1">
                 {[
                   { name: "Dashboard", href: "/overview" },
                   { name: "New Trade", href: "/trades/new" },
                   { name: "Trade History", href: "/trades" },
                   { name: "Trader Community", href: "/community" },
-                  { name: "AI Signals", href: "/signals" },
-                  { name: "AI Copilot", href: "/copilot" },
-                  { name: "Agent Arena", href: "/arena" },
+                  { name: "Trading Journal", href: "/journal" },
                   { name: "Trade Plans", href: "/plans" },
-                  { name: "Strategies", href: "/strategies" },
+                  { name: "Goals & Progress", href: "/goals" },
                   { name: "Risk Management", href: "/risk" },
                   { name: "Psychology", href: "/psychology" },
-                  { name: "Trading Journal", href: "/journal" },
-                  { name: "Rules & Discipline", href: "/rules" },
                   { name: "Analytics & Reports", href: "/analytics" },
-                  { name: "Goals & Progress", href: "/goals" },
-                  { name: "Settings", href: "/settings" },
-                  { name: "Help & Support", href: "/help" },
                 ].map((item) => {
-                  const isActive =
-                    pathname === item.href ||
-                    (item.href !== "/overview" && pathname.startsWith(item.href));
+                  const isActive = pathname === item.href;
                   return (
                     <Link
-                      key={item.name}
+                      key={item.href}
                       href={item.href}
                       onClick={() => setMobileMenuOpen(false)}
                       className={cn(
-                        "block px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150",
+                        "flex items-center px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all",
                         isActive
                           ? "bg-gradient-to-r from-[#4f46e5] to-[#6366f1] text-white shadow-md"
                           : "text-slate-400 hover:text-white hover:bg-white/[0.08]"
@@ -235,8 +217,8 @@ export function TopNav() {
                   {initials}
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-white truncate">{user?.name || "Demo Owner"}</p>
-                  <p className="text-[10px] text-slate-400 capitalize">{user?.role || "Owner"}</p>
+                  <p className="text-xs font-bold text-white truncate">{user?.name || "Pro Trader"}</p>
+                  <p className="text-[10px] text-slate-400 capitalize">{user?.role || "Trader"}</p>
                 </div>
               </div>
               <button

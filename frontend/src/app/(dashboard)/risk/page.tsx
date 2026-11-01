@@ -94,7 +94,7 @@ export default function RiskManagementPage() {
 
       {/* Top Real Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border-slate-200/90 dark:border-white/[0.08] shadow-xs">
+        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border border-slate-300 dark:border-white/10 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
             Max Risk Per Trade
           </span>
@@ -111,7 +111,7 @@ export default function RiskManagementPage() {
           </span>
         </Card>
 
-        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border-slate-200/90 dark:border-white/[0.08] shadow-xs">
+        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border border-slate-300 dark:border-white/10 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
             Max Daily Trades
           </span>
@@ -128,7 +128,7 @@ export default function RiskManagementPage() {
           </span>
         </Card>
 
-        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border-slate-200/90 dark:border-white/[0.08] shadow-xs">
+        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border border-slate-300 dark:border-white/10 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
             Max Daily Loss Lock
           </span>
@@ -145,7 +145,7 @@ export default function RiskManagementPage() {
           </span>
         </Card>
 
-        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border-slate-200/90 dark:border-white/[0.08] shadow-xs">
+        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border border-slate-300 dark:border-white/10 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
             Max Lot Size Limit
           </span>
@@ -164,7 +164,7 @@ export default function RiskManagementPage() {
       </div>
 
       {/* Customizable Risk Settings Form */}
-      <Card className="p-6 rounded-3xl bg-white dark:bg-[#0f1422] border-slate-200/90 dark:border-white/[0.08] shadow-xs">
+      <Card className="p-6 rounded-3xl bg-white dark:bg-[#0f1422] border border-slate-300 dark:border-white/10 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all">
         <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-white/[0.06]">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 flex items-center justify-center font-bold">

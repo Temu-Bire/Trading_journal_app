@@ -112,7 +112,7 @@ export function ForexSessionsClock() {
   };
 
   return (
-    <div className="rounded-3xl bg-white dark:bg-[#0f1422] border border-slate-200/90 dark:border-white/[0.08] p-5 shadow-xs transition-all">
+    <div className="rounded-3xl bg-white dark:bg-[#0f1422] border border-slate-300 dark:border-white/10 p-5 sm:p-6 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-white/[0.06]">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
@@ -214,3 +214,4 @@ export function ForexSessionsClock() {
     </div>
   );
 }
+

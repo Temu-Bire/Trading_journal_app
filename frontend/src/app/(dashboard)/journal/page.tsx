@@ -418,7 +418,7 @@ export default function JournalPage() {
 
       {/* 2. Review Metrics Banner */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border-slate-200/80 dark:border-white/[0.08] shadow-xs">
+        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border border-slate-300 dark:border-white/10 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all">
           <div className="flex items-center justify-between text-slate-400 mb-1">
             <span className="text-[11px] font-bold uppercase tracking-wider">Total Entries</span>
             <BookOpen className="w-4 h-4 text-indigo-500" />
@@ -431,7 +431,7 @@ export default function JournalPage() {
           </span>
         </Card>
 
-        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border-slate-200/80 dark:border-white/[0.08] shadow-xs">
+        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border border-slate-300 dark:border-white/10 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all">
           <div className="flex items-center justify-between text-slate-400 mb-1">
             <span className="text-[11px] font-bold uppercase tracking-wider">Plan Discipline</span>
             <ShieldCheck className="w-4 h-4 text-emerald-500" />
@@ -444,7 +444,7 @@ export default function JournalPage() {
           </span>
         </Card>
 
-        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border-slate-200/80 dark:border-white/[0.08] shadow-xs">
+        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border border-slate-300 dark:border-white/10 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all">
           <div className="flex items-center justify-between text-slate-400 mb-1">
             <span className="text-[11px] font-bold uppercase tracking-wider">Dominant State</span>
             <Sparkles className="w-4 h-4 text-amber-500" />
@@ -457,7 +457,7 @@ export default function JournalPage() {
           </span>
         </Card>
 
-        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border-slate-200/80 dark:border-white/[0.08] shadow-xs">
+        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border border-slate-300 dark:border-white/10 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all">
           <div className="flex items-center justify-between text-slate-400 mb-1">
             <span className="text-[11px] font-bold uppercase tracking-wider">Playbooks Logged</span>
             <Target className="w-4 h-4 text-purple-500" />
@@ -479,7 +479,7 @@ export default function JournalPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search journal entries by title, notes, pair, or tags..."
-            className="pl-9 h-11 rounded-2xl text-xs bg-white dark:bg-[#0f1422] border-slate-200 dark:border-white/10"
+            className="pl-10 h-11 rounded-2xl text-xs font-semibold bg-white dark:bg-[#0f1422] border-2 border-slate-300 dark:border-slate-700 shadow-2xs"
           />
         </div>
 
@@ -637,15 +637,16 @@ export default function JournalPage() {
                     )}
 
                     <div
-                      className="flex items-center gap-1 pt-1"
+                      className="flex items-center gap-2 pt-1"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <button
                         onClick={(e) => handleOpenEdit(entry, e)}
-                        className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.08] text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-indigo-200 dark:border-indigo-800/60 bg-indigo-50/80 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-xs font-bold transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
                         title="Edit entry"
                       >
-                        <Edit className="w-3.5 h-3.5" />
+                        <Edit className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                        <span>Edit</span>
                       </button>
                       <button
                         onClick={(e) => {
@@ -653,10 +654,11 @@ export default function JournalPage() {
                           setEntryToDelete(entry);
                           setDeleteConfirmOpen(true);
                         }}
-                        className="p-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500 hover:text-rose-600"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/80 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-900/50 text-xs font-bold transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
                         title="Delete entry"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+                        <span>Delete</span>
                       </button>
                     </div>
                   </div>

@@ -98,7 +98,7 @@ export function LotSizeCalculator({
             <select
               value={selectedPair}
               onChange={(e) => setSelectedPair(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#151c2e] text-xs font-semibold text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-[#151c2e] text-xs font-semibold text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
             >
               {FOREX_PAIRS.map((p) => (
                 <option key={p.pair} value={p.pair}>
@@ -119,7 +119,7 @@ export function LotSizeCalculator({
                 step="10"
                 value={balance}
                 onChange={(e) => setBalance(Number(e.target.value) || 0)}
-                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#151c2e] text-xs font-bold text-slate-900 dark:text-white"
+                className="w-full px-4 py-2.5 rounded-2xl border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-[#151c2e] focus:border-indigo-600 focus:ring-4 focus:ring-indigo-500/15 shadow-2xs text-xs font-bold text-slate-900 dark:text-white"
               />
             </div>
 
@@ -133,7 +133,7 @@ export function LotSizeCalculator({
                 step="0.5"
                 value={slPips}
                 onChange={(e) => setSlPips(Number(e.target.value) || 1)}
-                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#151c2e] text-xs font-bold text-slate-900 dark:text-white"
+                className="w-full px-4 py-2.5 rounded-2xl border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-[#151c2e] focus:border-indigo-600 focus:ring-4 focus:ring-indigo-500/15 shadow-2xs text-xs font-bold text-slate-900 dark:text-white"
               />
             </div>
           </div>
@@ -211,7 +211,7 @@ export function LotSizeCalculator({
                 step="5"
                 value={riskFixed}
                 onChange={(e) => setRiskFixed(Number(e.target.value) || 5)}
-                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#151c2e] text-xs font-bold text-slate-900 dark:text-white"
+                className="w-full px-4 py-2.5 rounded-2xl border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-[#151c2e] focus:border-indigo-600 focus:ring-4 focus:ring-indigo-500/15 shadow-2xs text-xs font-bold text-slate-900 dark:text-white"
               />
             )}
           </div>
@@ -284,3 +284,4 @@ export function LotSizeCalculator({
     </div>
   );
 }
+

@@ -217,7 +217,7 @@ export default function OverviewPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* ── 1. Top Bar: Capital & Currency Setup ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-3xl bg-white dark:bg-[#0f1422] border border-slate-200/90 dark:border-white/[0.08] shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#0f1422] border border-slate-300 dark:border-white/10 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
             <DollarSign className="w-5 h-5" />
@@ -233,10 +233,11 @@ export default function OverviewPage() {
                     setTempCapital(initialCapital);
                     setEditingCapital(true);
                   }}
-                  className="p-1 rounded-md text-slate-400 hover:text-indigo-600 transition-colors"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-white/[0.04] text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 text-xs font-semibold transition-all shadow-2xs"
                   title="Edit starting balance"
                 >
-                  <Edit2 className="w-3 h-3" />
+                  <Edit2 className="w-3 h-3 text-indigo-500" />
+                  <span>Edit</span>
                 </button>
               ) : null}
             </div>
@@ -282,7 +283,7 @@ export default function OverviewPage() {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={handleToggleCurrency}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-white/[0.04] text-xs font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-white/[0.08] shadow-2xs transition-all cursor-pointer"
             title="Toggle between USD and Ethiopian Birr"
           >
             <span>Currency:</span>
@@ -372,7 +373,7 @@ export default function OverviewPage() {
       <LotSizeCalculator initialBalance={initialCapital} />
 
       {/* ── 6. Real Equity Curve Chart ── */}
-      <Card className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#0f1422] border-slate-200/90 dark:border-white/[0.08] shadow-xs">
+      <Card className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#0f1422] border border-slate-300 dark:border-white/10 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100 dark:border-white/[0.06]">
           <div>
             <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
@@ -405,7 +406,7 @@ export default function OverviewPage() {
       </Card>
 
       {/* ── 7. Recent Trades Feed (Real User Records Only) ── */}
-      <Card className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#0f1422] border-slate-200/90 dark:border-white/[0.08] shadow-xs">
+      <Card className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#0f1422] border border-slate-300 dark:border-white/10 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06),0_2px_6px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_28px_-4px_rgba(15,23,42,0.09)] transition-all">
         <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-white/[0.06]">
           <div>
             <h3 className="text-base font-extrabold text-slate-900 dark:text-white">

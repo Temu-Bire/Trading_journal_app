@@ -167,7 +167,7 @@ export function Sidebar() {
         .join("")
         .toUpperCase()
         .slice(0, 2)
-    : "DO";
+    : "PT";
 
   const toggleSidebar = () => setCollapsed((prev) => !prev);
 
@@ -338,7 +338,7 @@ export function Sidebar() {
         >
           <div
             className="flex items-center gap-2.5 min-w-0"
-            title={collapsed ? `${user?.name || "Demo Owner"} (Owner)` : undefined}
+            title={collapsed ? `${user?.name || "Pro Trader"} (Trader)` : undefined}
           >
             {/* Circular Purple Avatar like screenshot */}
             <div className="w-[34px] h-[34px] rounded-full bg-[#8b5cf6] text-white font-bold text-xs flex items-center justify-center shrink-0 border-2 border-white/20 shadow-sm">
@@ -348,10 +348,10 @@ export function Sidebar() {
             {!collapsed && (
               <div className="min-w-0">
                 <span className="font-semibold text-xs text-white truncate block">
-                  {user?.name || "Demo Owner"}
+                  {user?.name || "Pro Trader"}
                 </span>
                 <span className="text-[11px] text-slate-400 capitalize block">
-                  {user?.role || "Owner"}
+                  {user?.role || "Trader"}
                 </span>
               </div>
             )}

@@ -340,39 +340,36 @@ export default function TradesPage() {
                         </td>
 
                         <td className="py-3.5 px-4 text-right">
-                          <div className="flex items-center justify-end gap-1">
+                          <div className="flex items-center justify-end gap-1.5">
                             <Link href={`/trades/${trade._id}`}>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="p-1.5 h-8 w-8 text-muted-foreground hover:text-foreground"
-                                title="View details"
+                              <button
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl border border-indigo-200 dark:border-indigo-800/60 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 text-xs font-bold transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
+                                title="View trade details"
                               >
-                                <Eye className="w-4 h-4" />
-                              </Button>
+                                <Eye className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                                <span>View</span>
+                              </button>
                             </Link>
 
                             {trade.status === "open" && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="p-1.5 h-8 w-8 text-profit hover:bg-emerald-50 dark:hover:bg-emerald-950/40"
+                              <button
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl border border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 text-xs font-bold transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
                                 onClick={() => setSelectedTradeToClose(trade)}
                                 title="Close trade"
                               >
-                                <CheckCircle className="w-4 h-4" />
-                              </Button>
+                                <CheckCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                                <span>Close</span>
+                              </button>
                             )}
 
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="p-1.5 h-8 w-8 text-loss hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                            <button
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/70 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 hover:bg-rose-100 text-xs font-bold transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
                               onClick={() => setTradeToDelete(trade)}
                               title="Delete trade"
                             >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                              <Trash2 className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+                              <span>Delete</span>
+                            </button>
                           </div>
                         </td>
                       </tr>

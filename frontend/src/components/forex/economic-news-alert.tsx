@@ -62,7 +62,7 @@ export function EconomicNewsAlert() {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="rounded-3xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40 p-4 sm:p-5 shadow-xs transition-all">
+    <div className="rounded-3xl bg-amber-50/70 dark:bg-amber-950/25 border-2 border-amber-300 dark:border-amber-800/60 p-5 shadow-[0_4px_20px_-2px_rgba(245,158,11,0.08),0_2px_6px_-1px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_24px_-4px_rgba(245,158,11,0.15)] transition-all">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-start sm:items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
@@ -128,3 +128,4 @@ export function EconomicNewsAlert() {
     </div>
   );
 }
+

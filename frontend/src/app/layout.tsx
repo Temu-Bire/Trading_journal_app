@@ -1,13 +1,21 @@
 import type { Metadata } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/lib/theme";
 import { AuthProvider } from "@/lib/auth";
 import { ToastProvider } from "@/lib/toast";
 
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Trading Journal Pro - Financial Performance & Analytics",
+  title: "TradeFlow PRO - Retail Forex Trading Journal & Risk Suite",
   description:
-    "Record, manage, and analyze trading performance across Forex, Crypto, Stocks, and Commodities.",
+    "Next-generation Forex & Gold trading journal, live sessions clock, risk management, and voice journaling for retail traders.",
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",
@@ -21,8 +29,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-background text-foreground antialiased selection:bg-primary-muted selection:text-primary">
+    <html lang="en" suppressHydrationWarning className={plusJakarta.variable}>
+      <body className={`${plusJakarta.className} min-h-screen bg-[#f0f4f8] dark:bg-[#090d16] text-foreground antialiased selection:bg-indigo-500 selection:text-white`}>
         <ThemeProvider>
           <AuthProvider>
             <ToastProvider>{children}</ToastProvider>
