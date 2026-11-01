@@ -68,14 +68,27 @@ export default function TradesPage() {
 
       const res = await apiClient.get<ITrade[]>("/trades", params);
 
-      if (res.success && res.data) {
+      if (res.success && res.data && res.data.length > 0) {
         setTrades(res.data);
         if (res.pagination) {
           setTotal(res.pagination.total);
           setPages(res.pagination.pages);
         }
       } else {
-        setTrades([]);
+        if (typeof window !== "undefined") {
+          const raw = localStorage.getItem("tj_local_trades");
+          if (raw) {
+            const localTrades = JSON.parse(raw) as ITrade[];
+            setTrades(localTrades);
+            setTotal(localTrades.length);
+            setPages(1);
+          } else {
+            setTrades([]);
+            setTotal(0);
+          }
+        } else {
+          setTrades([]);
+        }
       }
     } finally {
       setLoading(false);

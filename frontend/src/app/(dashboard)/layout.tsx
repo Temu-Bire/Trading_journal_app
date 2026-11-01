@@ -29,7 +29,7 @@ export default function DashboardLayout({
     return (
       <div className="flex h-screen w-full bg-[#edf2f7] dark:bg-[#090d16] animate-fade-in">
         {/* Sidebar skeleton */}
-        <div className="hidden lg:flex flex-col w-[245px] bg-[#090d16] border-r border-white/[0.08] p-6 gap-6">
+        <div className="hidden md:flex flex-col w-[245px] bg-[#090d16] border-r border-white/[0.08] p-6 gap-6">
           <div className="flex items-center gap-3 px-1">
             <Skeleton className="h-8 w-8 rounded-lg bg-white/10" />
             <Skeleton className="h-4 w-28 bg-white/10" />

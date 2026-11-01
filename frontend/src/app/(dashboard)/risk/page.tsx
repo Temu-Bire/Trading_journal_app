@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ShieldCheck,
   ShieldAlert,
@@ -12,200 +12,296 @@ import {
   TrendingDown,
   Info,
   CheckCircle2,
+  Save,
+  Clock,
+  Sparkles,
 } from "lucide-react";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { LotSizeCalculator } from "@/components/forex/lot-size-calculator";
+import { useAuth } from "@/lib/auth";
+import { useToast } from "@/lib/toast";
+import { cn, formatCurrency } from "@/lib/utils";
+
+interface RiskProfile {
+  maxTradesPerDay: number;
+  maxRiskPerTradePercent: number;
+  maxDailyLossAmount: number;
+  maxLotSize: number;
+  minRiskReward: string;
+  hardLockoutEnabled: boolean;
+}
 
 export default function RiskManagementPage() {
-  // Position Size Calculator State
-  const [accountBalance, setAccountBalance] = useState<number>(25000);
-  const [riskPercent, setRiskPercent] = useState<number>(1.5);
-  const [entryPrice, setEntryPrice] = useState<number>(100);
-  const [stopLossPrice, setStopLossPrice] = useState<number>(95);
+  const { user } = useAuth();
+  const { success } = useToast();
 
-  const riskAmount = (accountBalance * riskPercent) / 100;
-  const slDistance = Math.abs(entryPrice - stopLossPrice);
-  const slPercent = entryPrice > 0 ? (slDistance / entryPrice) * 100 : 0;
-  const positionUnits = slDistance > 0 ? (riskAmount / slDistance) : 0;
-  const totalPositionValue = positionUnits * entryPrice;
+  const [initialCapital, setInitialCapital] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("tj_initial_capital");
+      return saved ? Number(saved) : 1000;
+    }
+    return 1000;
+  });
+
+  const [profile, setProfile] = useState<RiskProfile>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(`tj_real_risk_profile_${user?.id || "default"}`);
+      if (saved) return JSON.parse(saved);
+    }
+    return {
+      maxTradesPerDay: 2,
+      maxRiskPerTradePercent: 1.0,
+      maxDailyLossAmount: 50,
+      maxLotSize: 0.5,
+      minRiskReward: "1:2.0",
+      hardLockoutEnabled: true,
+    };
+  });
+
+  const [savedNotice, setSavedNotice] = useState(false);
+
+  const handleSaveProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (typeof window !== "undefined") {
+      localStorage.setItem(`tj_real_risk_profile_${user?.id || "default"}`, JSON.stringify(profile));
+    }
+    setSavedNotice(true);
+    success("Risk management rules saved!");
+    setTimeout(() => setSavedNotice(false), 3000);
+  };
+
+  const maxDollarRiskPerTrade = (initialCapital * profile.maxRiskPerTradePercent) / 100;
 
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
-          <ShieldCheck className="w-6 h-6 text-emerald-500" />
-          Risk Management &amp; Capital Protection
-        </h1>
-        <p className="text-muted-foreground text-xs sm:text-sm mt-1">
-          Trading is not about maximizing profit on one trade; it is about surviving drawdowns and compounding capital safely.
-        </p>
-      </div>
-
-      {/* Top Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-4 border border-border">
-          <span className="text-xs text-muted-foreground font-semibold block">Daily Loss Lock</span>
-          <div className="flex items-baseline justify-between mt-1">
-            <span className="text-xl font-bold text-foreground">$500.00</span>
-            <Badge variant="success" className="text-[10px]">SAFE (0 / $500)</Badge>
-          </div>
-          <span className="text-[11px] text-muted-foreground mt-1 block">Account locks if daily loss reaches -2%</span>
-        </Card>
-
-        <Card className="p-4 border border-border">
-          <span className="text-xs text-muted-foreground font-semibold block">Current Portfolio Open Risk</span>
-          <div className="flex items-baseline justify-between mt-1">
-            <span className="text-xl font-bold text-foreground">1.8%</span>
-            <span className="text-xs text-muted-foreground">Cap: 5.0%</span>
-          </div>
-          <div className="w-full bg-muted rounded-full h-1.5 mt-2 overflow-hidden">
-            <div className="bg-primary h-full rounded-full" style={{ width: "36%" }} />
-          </div>
-        </Card>
-
-        <Card className="p-4 border border-border">
-          <span className="text-xs text-muted-foreground font-semibold block">Risk of Ruin</span>
-          <div className="flex items-baseline justify-between mt-1">
-            <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">&lt; 0.05%</span>
-            <Badge variant="profit" className="text-[10px]">OPTIMAL</Badge>
-          </div>
-          <span className="text-[11px] text-muted-foreground mt-1 block">Based on 67% win rate &amp; 2.5R average</span>
-        </Card>
-
-        <Card className="p-4 border border-border">
-          <span className="text-xs text-muted-foreground font-semibold block">Max Drawdown Buffer</span>
-          <div className="flex items-baseline justify-between mt-1">
-            <span className="text-xl font-bold text-foreground">14 Losses</span>
-            <Badge variant="outline" className="text-[10px]">BUFFER</Badge>
-          </div>
-          <span className="text-[11px] text-muted-foreground mt-1 block">Losses until 20% drawdown breach</span>
-        </Card>
-      </div>
-
-      {/* Main Content: Interactive Position Sizer & Rules */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left: Position Size Calculator (7 cols) */}
-        <Card className="lg:col-span-7 border border-border shadow-sm p-6 space-y-6">
-          <div className="border-b border-border/60 pb-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Calculator className="w-5 h-5 text-primary" />
-              <CardTitle className="text-base font-bold">Position Size Calculator</CardTitle>
-            </div>
-            <span className="text-xs text-muted-foreground">Dynamic Math Engine</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div className="space-y-1.5">
-              <label className="font-semibold text-foreground">Account Balance ($)</label>
-              <input
-                type="number"
-                value={accountBalance}
-                onChange={(e) => setAccountBalance(Number(e.target.value))}
-                className="w-full bg-muted/40 border border-border rounded-xl px-3 py-2 text-foreground focus:ring-1 focus:ring-primary"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="font-semibold text-foreground">Risk per Trade (%)</label>
-              <input
-                type="number"
-                step="0.1"
-                value={riskPercent}
-                onChange={(e) => setRiskPercent(Number(e.target.value))}
-                className="w-full bg-muted/40 border border-border rounded-xl px-3 py-2 text-foreground focus:ring-1 focus:ring-primary"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="font-semibold text-foreground">Planned Entry Price ($)</label>
-              <input
-                type="number"
-                value={entryPrice}
-                onChange={(e) => setEntryPrice(Number(e.target.value))}
-                className="w-full bg-muted/40 border border-border rounded-xl px-3 py-2 text-foreground focus:ring-1 focus:ring-primary"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="font-semibold text-foreground">Stop Loss Price ($)</label>
-              <input
-                type="number"
-                value={stopLossPrice}
-                onChange={(e) => setStopLossPrice(Number(e.target.value))}
-                className="w-full bg-muted/40 border border-border rounded-xl px-3 py-2 text-foreground focus:ring-1 focus:ring-primary"
-              />
-            </div>
-          </div>
-
-          {/* Calculator Output Display */}
-          <div className="p-4 rounded-xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 space-y-3">
-            <span className="text-xs font-bold text-primary uppercase tracking-wider block">
-              Calculated Execution Parameters
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80 dark:border-white/[0.08]">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+              Risk Management & Capital Shield
+            </h1>
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200/50">
+              Discipline Engine
             </span>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-              <div className="p-2.5 rounded-lg bg-card border border-border shadow-xs">
-                <span className="text-[10px] uppercase text-muted-foreground block font-semibold">Max Risk</span>
-                <span className="text-sm font-bold text-rose-500">${riskAmount.toFixed(2)}</span>
-              </div>
-              <div className="p-2.5 rounded-lg bg-card border border-border shadow-xs">
-                <span className="text-[10px] uppercase text-muted-foreground block font-semibold">Position Units</span>
-                <span className="text-sm font-bold text-foreground">{positionUnits.toFixed(2)}</span>
-              </div>
-              <div className="p-2.5 rounded-lg bg-card border border-border shadow-xs">
-                <span className="text-[10px] uppercase text-muted-foreground block font-semibold">SL Distance</span>
-                <span className="text-sm font-bold text-foreground">{slPercent.toFixed(2)}%</span>
-              </div>
-              <div className="p-2.5 rounded-lg bg-card border border-border shadow-xs">
-                <span className="text-[10px] uppercase text-muted-foreground block font-semibold">Total Exposure</span>
-                <span className="text-sm font-bold text-foreground">${totalPositionValue.toFixed(0)}</span>
-              </div>
-            </div>
           </div>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Define non-negotiable risk rules, lock your maximum daily trades, and control lot size exposure.
+          </p>
+        </div>
+      </div>
+
+      {/* Top Real Metrics */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border-slate-200/90 dark:border-white/[0.08] shadow-xs">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+            Max Risk Per Trade
+          </span>
+          <div className="flex items-baseline justify-between mt-1">
+            <span className="text-2xl font-extrabold text-slate-900 dark:text-white">
+              {profile.maxRiskPerTradePercent}%
+            </span>
+            <span className="text-xs font-bold text-rose-600">
+              ${maxDollarRiskPerTrade.toFixed(2)}
+            </span>
+          </div>
+          <span className="text-[10px] text-slate-400 mt-1 block">
+            Based on ${initialCapital.toLocaleString()} equity
+          </span>
         </Card>
 
-        {/* Right: Risk Rules & Guidelines (5 cols) */}
-        <Card className="lg:col-span-5 border border-border shadow-sm p-6 space-y-5">
-          <div className="border-b border-border/60 pb-3 flex items-center gap-2">
-            <Lock className="w-5 h-5 text-amber-500" />
-            <CardTitle className="text-base font-bold">Hard Capital Rules</CardTitle>
+        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border-slate-200/90 dark:border-white/[0.08] shadow-xs">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+            Max Daily Trades
+          </span>
+          <div className="flex items-baseline justify-between mt-1">
+            <span className="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400">
+              {profile.maxTradesPerDay} Trades/Day
+            </span>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600">
+              Anti-Overtrade
+            </span>
           </div>
+          <span className="text-[10px] text-slate-400 mt-1 block">
+            Hard stop after {profile.maxTradesPerDay} trades
+          </span>
+        </Card>
 
-          <div className="space-y-3 text-xs">
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-muted/30 border border-border/50">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold text-foreground">Rule 1: Never Risk &gt; 2% on Any Setup</span>
-                <p className="text-muted-foreground mt-0.5">
-                  Protects account from black swan events and allows statistical edge to play out.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-muted/30 border border-border/50">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold text-foreground">Rule 2: Stop Loss Defined Before Entry</span>
-                <p className="text-muted-foreground mt-0.5">
-                  No market entry is permitted without an exact mathematical invalidation price.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-muted/30 border border-border/50">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold text-foreground">Rule 3: Maximum 3 Losses Per Day</span>
-                <p className="text-muted-foreground mt-0.5">
-                  If 3 consecutive trades are stopped out, trading is terminated for the session to prevent tilt.
-                </p>
-              </div>
-            </div>
+        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border-slate-200/90 dark:border-white/[0.08] shadow-xs">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+            Max Daily Loss Lock
+          </span>
+          <div className="flex items-baseline justify-between mt-1">
+            <span className="text-2xl font-extrabold text-rose-600">
+              -${profile.maxDailyLossAmount}
+            </span>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-600">
+              Tilt Protection
+            </span>
           </div>
+          <span className="text-[10px] text-slate-400 mt-1 block">
+            Session shutdown if hit
+          </span>
+        </Card>
+
+        <Card className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0f1422] border-slate-200/90 dark:border-white/[0.08] shadow-xs">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+            Max Lot Size Limit
+          </span>
+          <div className="flex items-baseline justify-between mt-1">
+            <span className="text-2xl font-extrabold text-slate-900 dark:text-white">
+              {profile.maxLotSize} Lots
+            </span>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-600">
+              Safe Leverage
+            </span>
+          </div>
+          <span className="text-[10px] text-slate-400 mt-1 block">
+            Never exceed on retail broker
+          </span>
         </Card>
       </div>
+
+      {/* Customizable Risk Settings Form */}
+      <Card className="p-6 rounded-3xl bg-white dark:bg-[#0f1422] border-slate-200/90 dark:border-white/[0.08] shadow-xs">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-white/[0.06]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 flex items-center justify-center font-bold">
+              <Lock className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
+                Personalized Risk & Discipline Rules
+              </h3>
+              <p className="text-xs text-slate-500">
+                Configure your hard limits to prevent emotional overtrading and blown accounts.
+              </p>
+            </div>
+          </div>
+
+          {savedNotice && (
+            <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+              <CheckCircle2 className="w-4 h-4" /> Rules Saved!
+            </span>
+          )}
+        </div>
+
+        <form onSubmit={handleSaveProfile} className="pt-5 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                Max Trades Allowed Per Day
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="10"
+                value={profile.maxTradesPerDay}
+                onChange={(e) =>
+                  setProfile({ ...profile, maxTradesPerDay: Number(e.target.value) || 1 })
+                }
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-bold bg-slate-50 dark:bg-[#151c2e]"
+              />
+              <span className="text-[10px] text-slate-400 mt-1 block">
+                Stops revenge trading after losses
+              </span>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                Max Risk Per Trade (% of Balance)
+              </label>
+              <input
+                type="number"
+                min="0.25"
+                max="5"
+                step="0.25"
+                value={profile.maxRiskPerTradePercent}
+                onChange={(e) =>
+                  setProfile({ ...profile, maxRiskPerTradePercent: Number(e.target.value) || 0.25 })
+                }
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-bold bg-slate-50 dark:bg-[#151c2e]"
+              />
+              <span className="text-[10px] text-slate-400 mt-1 block">
+                Standard institutional recommendation is 1%
+              </span>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                Max Daily Loss Limit ($)
+              </label>
+              <input
+                type="number"
+                min="10"
+                step="10"
+                value={profile.maxDailyLossAmount}
+                onChange={(e) =>
+                  setProfile({ ...profile, maxDailyLossAmount: Number(e.target.value) || 10 })
+                }
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-bold bg-slate-50 dark:bg-[#151c2e]"
+              />
+              <span className="text-[10px] text-slate-400 mt-1 block">
+                Close terminal if day hits this loss
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                Max Lot Size Cap
+              </label>
+              <input
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={profile.maxLotSize}
+                onChange={(e) =>
+                  setProfile({ ...profile, maxLotSize: Number(e.target.value) || 0.01 })
+                }
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-bold bg-slate-50 dark:bg-[#151c2e]"
+              />
+              <span className="text-[10px] text-slate-400 mt-1 block">
+                Hard ceiling to avoid margin calls
+              </span>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                Minimum Risk-to-Reward Ratio
+              </label>
+              <input
+                type="text"
+                value={profile.minRiskReward}
+                onChange={(e) =>
+                  setProfile({ ...profile, minRiskReward: e.target.value })
+                }
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-bold bg-slate-50 dark:bg-[#151c2e]"
+              />
+              <span className="text-[10px] text-slate-400 mt-1 block">
+                Never accept trades below 1:2.0 RR
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end pt-3">
+            <Button
+              type="submit"
+              variant="primary"
+              size="sm"
+              className="font-bold gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-xs"
+            >
+              <Save className="w-3.5 h-3.5" />
+              Save Risk Codex
+            </Button>
+          </div>
+        </form>
+      </Card>
+
+      {/* Embedded Lot Size Calculator */}
+      <LotSizeCalculator initialBalance={initialCapital} />
     </div>
   );
 }
-

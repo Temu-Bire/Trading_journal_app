@@ -27,6 +27,7 @@ import {
   CreditCard,
   User,
   Zap,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
@@ -60,14 +61,21 @@ const navItems: NavItem[] = [
     icon: History,
   },
 
-  // AI-TRADER INTELLIGENCE
+  // AI-TRADER INTELLIGENCE & COMMUNITY
+  {
+    name: "Trader Community",
+    href: "/community",
+    icon: MessageSquare,
+    badge: "CHAT",
+    badgeColor: "emerald",
+    dividerBefore: true,
+  },
   {
     name: "AI Signals",
     href: "/signals",
     icon: Sparkles,
     badge: "AI",
     badgeColor: "indigo",
-    dividerBefore: true,
   },
   {
     name: "AI Copilot",
@@ -166,7 +174,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "hidden lg:flex flex-col h-screen sticky top-0 select-none z-30 transition-all duration-300 ease-in-out shrink-0",
+        "hidden md:flex flex-col h-screen sticky top-0 select-none z-30 transition-all duration-300 ease-in-out shrink-0",
         // Exact ZMenu Dark Midnight Background
         "bg-[#090d16] border-r border-white/[0.08] text-slate-400",
         collapsed ? "w-[68px]" : "w-[245px]"

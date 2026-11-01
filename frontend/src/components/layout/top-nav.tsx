@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 const ROUTE_TITLES: Record<string, string> = {
   overview: "Dashboard",
   trades: "Trade History",
+  community: "Trader Community & Chat",
   signals: "AI Signals & Scanner",
   copilot: "AI Trade Copilot",
   arena: "Agent Arena",
@@ -66,7 +67,7 @@ export function TopNav() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="lg:hidden p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.08] transition-colors"
+              className="md:hidden p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.08] transition-colors"
               aria-label="Open menu"
             >
               <Menu className="w-5 h-5" />
@@ -191,6 +192,7 @@ export function TopNav() {
                   { name: "Dashboard", href: "/overview" },
                   { name: "New Trade", href: "/trades/new" },
                   { name: "Trade History", href: "/trades" },
+                  { name: "Trader Community", href: "/community" },
                   { name: "AI Signals", href: "/signals" },
                   { name: "AI Copilot", href: "/copilot" },
                   { name: "Agent Arena", href: "/arena" },

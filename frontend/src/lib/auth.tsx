@@ -9,8 +9,10 @@ export const DEMO_USER: User = {
   id: "demo-trader-01",
   name: "Demo Owner",
   email: "demo@tradeflow.io",
-  role: "pro_trader" as any,
+  role: "user",
+  isActive: true,
   createdAt: "2026-01-01T00:00:00.000Z",
+  updatedAt: "2026-01-01T00:00:00.000Z",
 };
 
 interface AuthContextType {
@@ -125,8 +127,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: "trader-" + Date.now(),
         name: name || "Demo Owner",
         email: email || "demo@tradeflow.io",
-        role: "pro_trader" as any,
+        role: "user",
+        isActive: true,
         createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
       updateUser(newUser);
       return { success: true };
@@ -135,8 +139,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: "trader-" + Date.now(),
         name: name || "Demo Owner",
         email: email || "demo@tradeflow.io",
-        role: "pro_trader" as any,
+        role: "user",
+        isActive: true,
         createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
       updateUser(newUser);
       return { success: true };
