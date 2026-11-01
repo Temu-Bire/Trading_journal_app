@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 const ROUTE_TITLES: Record<string, string> = {
   overview: "Dashboard",
   trades: "Trade History",
+  new: "New Trade",
   community: "Trader Community & Chat",
   signals: "AI Signals & Scanner",
   copilot: "AI Trade Copilot",

@@ -264,7 +264,15 @@ export function Sidebar() {
         {navItems.map((item) => {
           const isActive =
             pathname === item.href ||
-            (item.href !== "/overview" && pathname.startsWith(item.href));
+            (item.href !== "/overview" &&
+              item.href !== "/trades/new" &&
+              pathname.startsWith(item.href + "/") &&
+              !navItems.some(
+                (other) =>
+                  other.href !== item.href &&
+                  (pathname === other.href || pathname.startsWith(other.href + "/")) &&
+                  other.href.length > item.href.length
+              ));
           const Icon = item.icon;
 
           return (
